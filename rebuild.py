@@ -11,32 +11,34 @@ def rebuild_database():
             user=os.environ.get("POSTGRES_USER", "postgres"),
             password=os.environ.get("POSTGRES_PASSWORD", "postgres"),
             host=os.environ.get("DB_HOST", "127.0.0.1"),
-            port=os.environ.get("DB_PORT", "5432")
+            port=os.environ.get("DB_PORT", os.environ.get("POSTGRES_PORT", "5432"))
         )
         conn.autocommit = True
         cur = conn.cursor()
     except Exception as e:
-        print(f"❌ Error de conexión: {e}")
-        return
+        raise SystemExit(f"Error de conexión: {e}")
 
     print("5. Probando creación desde cero (ejecutando migraciones)...")
     try:
-        with open('db/migrations/001_schema.sql', 'r', encoding='utf-8') as file:
-            cur.execute(file.read())
+        migrations_dir = os.path.join(os.path.dirname(__file__), "db", "migrations")
+        for filename in sorted(f for f in os.listdir(migrations_dir) if f.endswith(".sql")):
+             path = os.path.join(migrations_dir, filename)
+             with open(path, 'r', encoding='utf-8') as file:
+                 cur.execute(file.read())
         print("✓ Migraciones creadas correctamente.")
     except Exception as e:
-        print(f"❌ Error en migraciones: {e}")
-        return
+       raise SystemExit(f"Error en migraciones: {e}")
+
     finally:
         cur.close()
         conn.close()
 
     print("6. Probando carga de seed sintético...")
     try:
-        subprocess.run(["python3", "db/seed/seed.py"], check=True)
+        subprocess.run(["python3", os.path.join(os.path.dirname(__file__), "db", "seed", "seed.py")], check=True)
         print("✓ Carga de seed probada con éxito.")
     except Exception as e:
-        print(f"❌ Error en el seed: {e}")
+        raise SystemExit(f"Error en el seed: {e}")
 
 if __name__ == "__main__":
     rebuild_database()

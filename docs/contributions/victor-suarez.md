@@ -63,7 +63,7 @@ Durante esta contribución se crearon los siguientes archivos:
 * `db/migrations/001_schema.sql`
 * `db/seed/seed.py`
 * `rebuild.py`
-* `docs/contributions/victor-jimenez.md`
+* `docs/contributions/victor-suarez.md`
 
 ## Traspaso hacia Angelica Arlett Santiago Serrano
 
