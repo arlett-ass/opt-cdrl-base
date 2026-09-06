@@ -12,7 +12,7 @@ def run_seed():
         user=os.environ.get("POSTGRES_USER", "postgres"),
         password=os.environ.get("POSTGRES_PASSWORD", "postgres"),
         host=os.environ.get("DB_HOST", "127.0.0.1"),
-        port=os.environ.get("DB_PORT", "5432")
+        port=os.environ.get("DB_PORT", os.environ.get("POSTGRES_PORT", "5432"))
     )
     cur = conn.cursor()
 
@@ -61,6 +61,7 @@ def run_seed():
     except Exception as e:
         conn.rollback()
         print(f"Error: {e}")
+        raise
     finally:
         cur.close()
         conn.close()
