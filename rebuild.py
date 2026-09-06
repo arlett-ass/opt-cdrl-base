@@ -26,7 +26,7 @@ def rebuild_database():
         print("✓ Migraciones creadas correctamente.")
     except Exception as e:
         print(f"❌ Error en migraciones: {e}")
-        return
+        raise
     finally:
         cur.close()
         conn.close()
