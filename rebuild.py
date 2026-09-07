@@ -1,44 +1,107 @@
 import psycopg2
-import subprocess
 import os
+from pathlib import Path
+from db.seed.seed import run_seed
 
-def rebuild_database():
-    print("Iniciando pruebas de base de datos...")
-    
-    try:
-        conn = psycopg2.connect(
-            dbname=os.environ.get("POSTGRES_DB", "postgres"),
-            user=os.environ.get("POSTGRES_USER", "postgres"),
-            password=os.environ.get("POSTGRES_PASSWORD", "postgres"),
-            host=os.environ.get("DB_HOST", "127.0.0.1"),
-            port=os.environ.get("DB_PORT", os.environ.get("POSTGRES_PORT", "5432"))
+MIGRATIONS_DIR = Path(__file__).parent / "db" / "migrations"
+
+def get_connection():
+    return psycopg2.connect(
+        dbname=os.getenv("POSTGRES_DB", "cdrl"),
+        user=os.getenv("POSTGRES_USER", "cdrl_dev"),
+        password=os.getenv("POSTGRES_PASSWORD", "cdrl_dev_only"),
+        host=os.getenv("DB_HOST", "127.0.0.1"),
+        port=os.getenv("POSTGRES_PORT", "5432"),
+    )
+
+def ensure_migration_table(conn):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS schema_migrations (
+                version VARCHAR(255) PRIMARY KEY,
+                applied_at TIMESTAMPTZ
+                    NOT NULL
+                    DEFAULT CURRENT_TIMESTAMP
+            );
+            """
         )
-        conn.autocommit = True
-        cur = conn.cursor()
-    except Exception as e:
-        raise SystemExit(f"Error de conexión: {e}")
 
-    print("5. Probando creación desde cero (ejecutando migraciones)...")
+    conn.commit()
+
+def migration_was_applied(conn, version):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM schema_migrations
+                WHERE version = %s
+            );
+            """,
+            (version,),
+        )
+
+        return cur.fetchone()[0]
+
+def apply_migration(conn, migration_path):
+    version = migration_path.name
+
+    if migration_was_applied(conn, version):
+        print(f"Migración ya aplicada: {version}")
+        return
+
+    print(f"Aplicando migración: {version}")
+
+    sql = migration_path.read_text(encoding="utf-8")
+
     try:
-        migrations_dir = os.path.join(os.path.dirname(__file__), "db", "migrations")
-        for filename in sorted(f for f in os.listdir(migrations_dir) if f.endswith(".sql")):
-             path = os.path.join(migrations_dir, filename)
-             with open(path, 'r', encoding='utf-8') as file:
-                 cur.execute(file.read())
-        print("✓ Migraciones creadas correctamente.")
-    except Exception as e:
-       raise SystemExit(f"Error en migraciones: {e}")
+        with conn.cursor() as cur:
+            cur.execute(sql)
+
+            cur.execute(
+                """
+                INSERT INTO schema_migrations (version)
+                VALUES (%s);
+                """,
+                (version,),
+            )
+
+        conn.commit()
+
+        print(
+            f"Migración aplicada correctamente: {version}"
+        )
+
+    except Exception:
+        conn.rollback()
+        raise
+
+
+def run_migrations():
+    conn = get_connection()
+
+    try:
+        ensure_migration_table(conn)
+
+        migrations = sorted(MIGRATIONS_DIR.glob("*.sql"))
+
+        if not migrations:
+            raise RuntimeError("No se encontraron migraciones SQL.")
+
+        for migration in migrations:
+            apply_migration(conn, migration)
 
     finally:
-        cur.close()
         conn.close()
 
-    print("6. Probando carga de seed sintético...")
-    try:
-        subprocess.run(["python3", os.path.join(os.path.dirname(__file__), "db", "seed", "seed.py")], check=True)
-        print("✓ Carga de seed probada con éxito.")
-    except Exception as e:
-        raise SystemExit(f"Error en el seed: {e}")
+
+def main():
+    print("Preparando base de datos...")
+    run_migrations()
+    print("Ejecutando seed...")
+    run_seed()
+    print("Base preparada correctamente.")
 
 if __name__ == "__main__":
-    rebuild_database()
+    main()
