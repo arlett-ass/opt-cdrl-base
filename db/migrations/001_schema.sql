@@ -1,8 +1,3 @@
-BEGIN;
-
--- Esto cumple el punto 3 (hacerlo reproducible/idempotente)
-DROP TABLE IF EXISTS telemetry_readings, devices, locations CASCADE;
-
 -- Esto cumple los puntos 1 y 2 (esquema del integrante 1 hecho migración)
 CREATE TABLE IF NOT EXISTS locations (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
@@ -57,5 +52,3 @@ CREATE TABLE IF NOT EXISTS telemetry_readings (
 
 CREATE INDEX IF NOT EXISTS idx_devices_location_id ON devices (location_id);
 CREATE INDEX IF NOT EXISTS idx_telemetry_recorded_at ON telemetry_readings (recorded_at);
-
-COMMIT;
