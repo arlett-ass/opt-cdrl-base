@@ -15,9 +15,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Levantar servicios
+        run: |
+          docker compose up -d --wait
+          docker compose ps
+      - name: Preparar base de datos
+        run: |
+          python rebuild.py
       - name: Verify reproducibility contract
         shell: bash
         run: |
           set -euo pipefail
           make setup
           make verify
+      - name: Detener servicios
+        if: always()
+        run: |
+          docker compose down
