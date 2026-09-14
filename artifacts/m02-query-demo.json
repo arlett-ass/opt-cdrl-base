@@ -1,0 +1,223 @@
+{
+  "assignmentId": "M02",
+  "scope": "parameterized_queries",
+  "generated_at": "2026-09-14T03:14:13.733331+00:00",
+  "parameters": {
+    "device_code": "DEV-001",
+    "device_id": 1,
+    "location_id": 1,
+    "start": "2026-01-02T08:00:00+00:00",
+    "end": "2026-01-02T17:00:00+00:00",
+    "limit": 5,
+    "empty_start": "2035-01-01T00:00:00+00:00",
+    "empty_end": "2035-01-02T00:00:00+00:00"
+  },
+  "results": {
+    "readings_between": [
+      {
+        "id": 1,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T08:00:00+00:00",
+        "received_at": "2026-01-02T08:05:00+00:00",
+        "temperature_c": "20.00",
+        "humidity_pct": "40.00",
+        "co2_ppm": "500.00"
+      },
+      {
+        "id": 2,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T09:00:00+00:00",
+        "received_at": "2026-01-02T09:05:00+00:00",
+        "temperature_c": "20.10",
+        "humidity_pct": "41.00",
+        "co2_ppm": "510.00"
+      },
+      {
+        "id": 3,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T10:00:00+00:00",
+        "received_at": "2026-01-02T10:05:00+00:00",
+        "temperature_c": "20.20",
+        "humidity_pct": "42.00",
+        "co2_ppm": "520.00"
+      },
+      {
+        "id": 4,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T11:00:00+00:00",
+        "received_at": "2026-01-02T11:05:00+00:00",
+        "temperature_c": "20.30",
+        "humidity_pct": "43.00",
+        "co2_ppm": "530.00"
+      },
+      {
+        "id": 5,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T12:00:00+00:00",
+        "received_at": "2026-01-02T12:05:00+00:00",
+        "temperature_c": "20.40",
+        "humidity_pct": "44.00",
+        "co2_ppm": "540.00"
+      },
+      {
+        "id": 6,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T13:00:00+00:00",
+        "received_at": "2026-01-02T13:05:00+00:00",
+        "temperature_c": "20.50",
+        "humidity_pct": "45.00",
+        "co2_ppm": "550.00"
+      },
+      {
+        "id": 7,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T14:00:00+00:00",
+        "received_at": "2026-01-02T14:05:00+00:00",
+        "temperature_c": "20.60",
+        "humidity_pct": "46.00",
+        "co2_ppm": "560.00"
+      },
+      {
+        "id": 8,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T15:00:00+00:00",
+        "received_at": "2026-01-02T15:05:00+00:00",
+        "temperature_c": "20.70",
+        "humidity_pct": "47.00",
+        "co2_ppm": "570.00"
+      },
+      {
+        "id": 9,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T16:00:00+00:00",
+        "received_at": "2026-01-02T16:05:00+00:00",
+        "temperature_c": "20.80",
+        "humidity_pct": "48.00",
+        "co2_ppm": "580.00"
+      },
+      {
+        "id": 10,
+        "device_id": 1,
+        "recorded_at": "2026-01-02T17:00:00+00:00",
+        "received_at": "2026-01-02T17:05:00+00:00",
+        "temperature_c": "20.90",
+        "humidity_pct": "49.00",
+        "co2_ppm": "590.00"
+      }
+    ],
+    "latest_reading": {
+      "id": 10,
+      "device_id": 1,
+      "recorded_at": "2026-01-02T17:00:00+00:00",
+      "received_at": "2026-01-02T17:05:00+00:00",
+      "temperature_c": "20.90",
+      "humidity_pct": "49.00",
+      "co2_ppm": "590.00"
+    },
+    "reading_statistics": {
+      "reading_count": 10,
+      "avg_temperature_c": "20.4500000000000000",
+      "min_temperature_c": "20.00",
+      "max_temperature_c": "20.90",
+      "avg_humidity_pct": "44.5000000000000000",
+      "min_humidity_pct": "40.00",
+      "max_humidity_pct": "49.00",
+      "avg_co2_ppm": "545.0000000000000000",
+      "min_co2_ppm": "500.00",
+      "max_co2_ppm": "590.00"
+    },
+    "devices_at_location": [
+      {
+        "id": 1,
+        "location_id": 1,
+        "device_code": "DEV-001",
+        "name": "Sensor Ambiental 1",
+        "status": "active",
+        "installed_at": "2026-01-01T12:00:00+00:00"
+      },
+      {
+        "id": 2,
+        "location_id": 1,
+        "device_code": "DEV-002",
+        "name": "Sensor Ambiental 2",
+        "status": "active",
+        "installed_at": "2026-01-01T12:00:00+00:00"
+      }
+    ],
+    "recent_active_readings": [
+      {
+        "reading_id": 50,
+        "device_id": 5,
+        "device_code": "DEV-005",
+        "device_status": "active",
+        "location_id": 3,
+        "location_code": "LOC-003",
+        "recorded_at": "2026-01-02T17:00:00+00:00",
+        "temperature_c": "24.90",
+        "humidity_pct": "53.00",
+        "co2_ppm": "790.00"
+      },
+      {
+        "reading_id": 20,
+        "device_id": 2,
+        "device_code": "DEV-002",
+        "device_status": "active",
+        "location_id": 1,
+        "location_code": "LOC-001",
+        "recorded_at": "2026-01-02T17:00:00+00:00",
+        "temperature_c": "21.90",
+        "humidity_pct": "50.00",
+        "co2_ppm": "640.00"
+      },
+      {
+        "reading_id": 10,
+        "device_id": 1,
+        "device_code": "DEV-001",
+        "device_status": "active",
+        "location_id": 1,
+        "location_code": "LOC-001",
+        "recorded_at": "2026-01-02T17:00:00+00:00",
+        "temperature_c": "20.90",
+        "humidity_pct": "49.00",
+        "co2_ppm": "590.00"
+      },
+      {
+        "reading_id": 49,
+        "device_id": 5,
+        "device_code": "DEV-005",
+        "device_status": "active",
+        "location_id": 3,
+        "location_code": "LOC-003",
+        "recorded_at": "2026-01-02T16:00:00+00:00",
+        "temperature_c": "24.80",
+        "humidity_pct": "52.00",
+        "co2_ppm": "780.00"
+      },
+      {
+        "reading_id": 19,
+        "device_id": 2,
+        "device_code": "DEV-002",
+        "device_status": "active",
+        "location_id": 1,
+        "location_code": "LOC-001",
+        "recorded_at": "2026-01-02T16:00:00+00:00",
+        "temperature_c": "21.80",
+        "humidity_pct": "49.00",
+        "co2_ppm": "630.00"
+      }
+    ],
+    "empty_window_readings": [],
+    "empty_window_statistics": {
+      "reading_count": 0,
+      "avg_temperature_c": null,
+      "min_temperature_c": null,
+      "max_temperature_c": null,
+      "avg_humidity_pct": null,
+      "min_humidity_pct": null,
+      "max_humidity_pct": null,
+      "avg_co2_ppm": null,
+      "min_co2_ppm": null,
+      "max_co2_ppm": null
+    }
+  }
+}

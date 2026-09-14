@@ -1,5 +1,4 @@
 # CDRL — Base inicial del proyecto
-
 Esta carpeta es la base común del proyecto **Cloud Data Reliability Lab (CDRL)** para la asignatura **Bases de datos en la nube**.
 
 ## Flujo de inicio
