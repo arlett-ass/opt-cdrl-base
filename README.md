@@ -1,12 +1,4 @@
 # CDRL — Base inicial del proyecto
-
-## M02: consultas parametrizadas
-
-Consulta [la guía de consultas](docs/M02-queries.md) para preparar PostgreSQL,
-ejecutar las cinco consultas y verificar los casos normal, vacío y límites.
-La demo se ejecuta con `python -m db.queries.demo` o `make queries`;
-las pruebas específicas, con `make verify-queries`.
-
 Esta carpeta es la base común del proyecto **Cloud Data Reliability Lab (CDRL)** para la asignatura **Bases de datos en la nube**.
 
 ## Flujo de inicio

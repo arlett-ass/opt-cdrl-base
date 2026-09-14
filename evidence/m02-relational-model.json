@@ -1,0 +1,81 @@
+{
+    "assignmentId": "m02-relational-model",
+    "commitSha": "REPLACE_AT_SUBMISSION",
+    "commands": [
+        "make setup",
+        "python rebuild.py",
+        "make verify",
+        "python -m db.queries.demo",
+        "make run"
+    ],
+    "results": {
+        "database": "PostgreSQL 16",
+        "environment": "Docker Compose",
+        "migration": {
+            "file": "db/migrations/002_relational_model.sql",
+            "status": "passed",
+            "idempotent": true,
+            "destructive": false,
+            "view": "public.v_telemetry_context"
+        },
+        "relationalModel": {
+        "status": "passed",
+        "relationships": [
+                "locations -> devices",
+                "devices -> telemetry_readings"
+            ],
+        "invariants": [
+                "No se permiten dos lecturas del mismo dispositivo en el mismo instante.",
+                "Toda lectura debe pertenecer a un dispositivo existente.",
+                "Toda lectura debe contener device_id.",
+                "received_at debe ser igual o posterior a recorded_at.",
+                "No se puede eliminar un dispositivo que conserva lecturas.",
+                "No se puede eliminar una ubicación que conserva dispositivos."
+            ]
+        },
+        "parameterizedQueries": {
+        "status": "passed",
+        "file": "db/queries/telemetry.py",
+        "queries": [
+                "readings_between",
+                "latest_reading",
+                "reading_statistics",
+                "devices_at_location",
+                "recent_active_readings"
+            ],
+        "sqlValuesSeparated": true
+        },
+        "tests": {
+            "status": "passed",
+            "total": 12,
+            "passed": 12,
+            "failed": 0,
+            "invariantTests": 8,
+            "acceptanceTests": 4,
+            "acceptanceCases": [
+                "caso normal",
+                "resultado vacío",
+                "valores límite",
+                "fallo declarado rechazado por restricción CHECK"
+            ]
+        },
+        "artifacts": [
+            "artifacts/m02-relational-results.json",
+            "artifacts/m02-david-invariants.json"
+        ],
+        "m02Verification": "passed"
+    },
+    "assumptions": [
+        "PostgreSQL se ejecuta localmente mediante Docker Compose durante la validación de la entrega.",
+        "AWS Academy Learner Lab se utilizará cuando los servicios requeridos por la actividad se encuentren habilitados.",
+        "La migración 001_schema.sql ya fue aplicada antes de 002_relational_model.sql.",
+        "Los nombres de las restricciones definidos en M01 se conservan durante M02.",
+        "Todos los datos utilizados por las pruebas y demostraciones son sintéticos."
+    ],
+    "limitations": [
+        "La vista v_telemetry_context representa la ubicación actual del dispositivo y no mantiene un historial de cambios de ubicación.",
+        "M02 se limita al modelo relacional operativo, sus invariantes y las consultas parametrizadas requeridas por la actividad.",
+        "No se utilizan credenciales, dispositivos reales ni datos personales.",
+        "Los resultados dependen de que las variables de conexión apunten a la misma instancia PostgreSQL utilizada por rebuild.py."
+    ]
+}

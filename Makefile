@@ -1,4 +1,4 @@
-.PHONY: setup verify run queries verify-queries
+.PHONY: setup verify run queries
 
 PYTHON ?= python
 
@@ -9,6 +9,7 @@ setup:
 
 verify:
 	@bash scripts/verify_base.sh
+	@PYTHON="$(PYTHON)" bash scripts/verify_m02.sh
 
 run:
 	@docker compose up
@@ -16,6 +17,3 @@ run:
 # M02: ejecutar después de levantar PostgreSQL y aplicar rebuild.py.
 queries:
 	@$(PYTHON) -m db.queries.demo
-
-verify-queries:
-	@$(PYTHON) -m pytest tests/test_m02_queries_victor.py -q --json-report --json-report-file=artifacts/m02-query-tests.json
