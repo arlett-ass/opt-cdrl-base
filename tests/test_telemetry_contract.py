@@ -4,12 +4,13 @@ import pytest
 from psycopg2 import errors
 from datetime import datetime, timezone
 from decimal import Decimal
+from rebuild import required_env
 
 def get_connection():
     return psycopg2.connect(
         dbname=os.getenv("POSTGRES_DB", "cdrl"),
         user=os.getenv("POSTGRES_USER", "cdrl_dev"),
-        password=os.getenv("POSTGRES_PASSWORD", "cdrl_dev_only"),
+        password=required_env("POSTGRES_PASSWORD"),
         host=os.getenv("DB_HOST", "127.0.0.1"),
         port=os.getenv("POSTGRES_PORT", "5432"),
     )

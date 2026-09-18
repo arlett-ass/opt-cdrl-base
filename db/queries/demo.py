@@ -16,6 +16,7 @@ from db.queries.telemetry import (
     readings_between,
     recent_active_readings,
 )
+from rebuild import required_env
 
 
 def json_value(value):
@@ -40,7 +41,7 @@ def main():
         conn = psycopg2.connect(
             dbname=os.getenv("POSTGRES_DB", "cdrl"),
             user=os.getenv("POSTGRES_USER", "cdrl_dev"),
-            password=os.getenv("POSTGRES_PASSWORD", "cdrl_dev_only"),
+            password=required_env("POSTGRES_PASSWORD"),
             host=os.getenv("DB_HOST", "127.0.0.1"),
             port=os.getenv("POSTGRES_PORT", "5432"),
             connect_timeout=5,
