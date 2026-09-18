@@ -2,11 +2,20 @@ import os
 from datetime import datetime, timedelta, timezone
 import psycopg2
 
+def required_env(name):
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(
+            f"La variable de entorno {name} es obligatoria; "
+            "no se usa una contraseña por defecto."
+        )
+    return value
+
 def get_connection():
     return psycopg2.connect(
         dbname=os.environ.get("POSTGRES_DB", "cdrl"),
         user=os.getenv("POSTGRES_USER", "cdrl_dev"),
-        password=os.getenv("POSTGRES_PASSWORD", "cdrl_dev_only"),
+        password=required_env("POSTGRES_PASSWORD"),
         host=os.environ.get("DB_HOST", "127.0.0.1"),
         port=os.environ.get("POSTGRES_PORT", "5432")
     )
