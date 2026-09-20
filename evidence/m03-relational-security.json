@@ -1,0 +1,109 @@
+{
+    "assignmentId": "m03-relational-security",
+    "commitSha": "REPLACE_AT_SUBMISSION",
+    "commands": [
+        "make setup",
+        "python rebuild.py",
+        "make verify",
+        "make run"
+    ],
+    "results": {
+        "database": "PostgreSQL 16",
+        "environment": "Docker Compose",
+        "migration": {
+            "file": "db/migrations/003_security_roles.sql",
+            "status": "passed",
+            "idempotent": true,
+            "roles": [
+                "cdrl_migrator",
+                "cdrl_writer",
+                "cdrl_reader",
+                "cdrl_operator"
+            ]
+        },
+        "relationalSecurity": {
+            "status": "passed",
+            "principle": "minimum privilege",
+            "rolesNoLogin": true,
+            "permissions": {
+                "cdrl_migrator": [
+                    "USAGE y CREATE en el esquema public",
+                    "propiedad estructural de objetos relacionales"
+                ],
+                "cdrl_writer": [
+                    "USAGE en el esquema public",
+                    "SELECT en tablas relacionales y vistas",
+                    "INSERT en telemetry_readings",
+                    "USAGE en la secuencia de identidad de telemetry_readings"
+                ],
+                "cdrl_reader": [
+                    "USAGE en el esquema public",
+                    "SELECT en tablas relacionales y vistas"
+                ],
+                "cdrl_operator": [
+                    "USAGE en el esquema public",
+                    "SELECT en tablas relacionales y vistas",
+                    "UPDATE solo en devices.status"
+                ]
+            }
+        },
+        "secrets": {
+            "status": "passed",
+            "passwordFromEnvironment": true,
+            "environmentVariable": "POSTGRES_PASSWORD",
+            "envTracked": false,
+            "envExampleContainsUsableCredential": false,
+            "dockerComposeRequiresPassword": true,
+            "secretPatternVerification": "passed"
+        },
+        "tests": {
+            "status": "passed",
+            "total": 4,
+            "passed": 4,
+            "failed": 0,
+            "normalTests": 1,
+            "boundaryTests": 2,
+            "declaredFailureTests": 1,
+            "cases": [
+                "cdrl_reader puede consultar v_telemetry_context",
+                "cdrl_writer puede insertar telemetría y utilizar la secuencia de identidad requerida",
+                "cdrl_operator puede actualizar devices.status",
+                "La operación INSERT de cdrl_reader es rechazada por la autorización"
+            ],
+            "declaredFailure": {
+                "role": "cdrl_reader",
+                "operation": "INSERT on telemetry_readings",
+                "expectedError": "InsufficientPrivilege",
+                "sqlState": "42501",
+                "status": "passed"
+            }
+        },
+        "testIsolation": {
+            "status": "passed",
+            "syntheticData": true,
+            "uniqueTestIdentifiers": true,
+            "rollbackAfterTests": true,
+            "seedModifiedPermanently": false
+        },
+        "artifact": "artifacts/m03-security-results.json",
+        "m03Verification": "passed",
+        "integratedVerification": {
+            "status": "passed",
+            "command": "make verify",
+            "m02TestsPassed": 12,
+            "m03TestsPassed": 4
+        }
+    },
+    "assumptions": [
+        "PostgreSQL se ejecuta localmente mediante Docker Compose durante la validación de la entrega.",
+        "Las migraciones 001_schema.sql y 002_relational_model.sql ya fueron aplicadas antes de 003_security_roles.sql.",
+        "La conexión utilizada para aplicar migraciones y ejecutar las pruebas dispone de los privilegios administrativos necesarios para SET ROLE.",
+        "POSTGRES_PASSWORD se define fuera del repositorio.",
+        "Todos los datos utilizados por las pruebas de seguridad son sintéticos."
+    ],
+    "limitations": [
+        "Los roles de M03 representan conjuntos de privilegios mediante NOLOGIN y no identidades externas independientes.",
+        "La política de mínimo privilegio cubre únicamente los objetos relacionales definidos durante M01 y M02.",
+        "Los resultados dependen de que las variables de conexión apunten a la misma instancia PostgreSQL utilizada por rebuild.py."
+    ]
+}
