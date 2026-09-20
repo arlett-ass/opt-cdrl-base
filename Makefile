@@ -10,6 +10,7 @@ setup:
 verify:
 	@bash scripts/verify_base.sh
 	@PYTHON="$(PYTHON)" bash scripts/verify_m02.sh
+	@PYTHON="$(PYTHON)" bash scripts/verify_m03.sh
 
 run:
 	@docker compose up
