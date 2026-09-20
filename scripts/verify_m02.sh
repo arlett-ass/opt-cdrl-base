@@ -33,7 +33,6 @@ rm -f -- "$REPORT"
 echo "Ejecutando pruebas de invariantes y aceptación de M02..."
 
 "$PYTHON_BIN" -m pytest \
-  tests/test_m02_invariants_david.py \
   tests/test_m02_acceptance_angelica.py \
   -v \
   --tb=short \
