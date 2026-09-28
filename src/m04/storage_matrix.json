@@ -1,0 +1,292 @@
+{
+"schema_version": "1.0",
+"module": "M04",
+"description": "Matriz ponderada reproducible para seleccionar almacenamiento NoSQL para CDRL.",
+"criteria": [
+{
+    "id": "queries",
+    "name": "Consultas",
+    "weight": 30
+},
+{
+    "id": "scale",
+    "name": "Escala/ingestion",
+    "weight": 25
+},
+{
+    "id": "consistency",
+    "name": "Consistencia",
+    "weight": 15
+},
+{
+    "id": "cost",
+    "name": "Costo",
+    "weight": 15
+},
+{
+    "id": "failures",
+    "name": "Fallos/disponibilidad",
+    "weight": 10
+},
+{
+    "id": "complexity",
+    "name": "Complejidad operativa",
+    "weight": 5
+}
+],
+"alternatives": [
+{
+    "id": "document",
+    "name": "Document",
+    "representative": "MongoDB",
+    "scores": {
+    "queries": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "D1",
+        "H1",
+        "H3",
+        "H4"
+        ]
+    },
+    "scale": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "D4",
+        "H5"
+        ]
+    },
+    "consistency": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "D5",
+        "H3",
+        "H4",
+        "H7"
+        ]
+    },
+    "cost": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "H9",
+        "H10",
+        "H18",
+        "K5",
+        "K6"
+        ]
+    },
+    "failures": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "D6",
+        "H8"
+        ]
+    },
+    "complexity": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "H10"
+        ]
+    }
+    }
+},
+{
+    "id": "graph",
+    "name": "Graph",
+    "representative": "Neo4j",
+    "scores": {
+    "queries": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "G1",
+        "H2",
+        "H3",
+        "H4"
+        ]
+    },
+    "scale": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "G2",
+        "H6"
+        ]
+    },
+    "consistency": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "G3",
+        "G4",
+        "H3",
+        "H7"
+        ]
+    },
+    "cost": {
+        "value": 1,
+        "status": "scored",
+        "trace": [
+        "H9",
+        "H10",
+        "H18",
+        "K7",
+        "K8"
+        ]
+    },
+    "failures": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "G2",
+        "H8"
+        ]
+    },
+    "complexity": {
+        "value": 2,
+        "status": "scored",
+        "trace": [
+        "H10"
+        ]
+    }
+    }
+},
+{
+    "id": "column",
+    "name": "Column/Wide-column",
+    "representative": "Apache Cassandra",
+    "scores": {
+    "queries": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "H11"
+        ]
+    },
+    "scale": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "C1",
+        "H12",
+        "H13"
+        ]
+    },
+    "consistency": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "C3",
+        "C6",
+        "C7",
+        "H14"
+        ]
+    },
+    "cost": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "H18",
+        "K1",
+        "K2"
+        ]
+    },
+    "failures": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "C6",
+        "C7",
+        "C8",
+        "H14"
+        ]
+    },
+    "complexity": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "H11",
+        "H12",
+        "H13",
+        "H14"
+        ]
+    }
+    }
+},
+{
+    "id": "object",
+    "name": "Object",
+    "representative": "Amazon S3",
+    "scores": {
+    "queries": {
+        "value": 2,
+        "status": "scored",
+        "trace": [
+        "O1",
+        "O3",
+        "H16",
+        "H17"
+        ]
+    },
+    "scale": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "O1",
+        "O3",
+        "H16"
+        ]
+    },
+    "consistency": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "O2",
+        "H15"
+        ]
+    },
+    "cost": {
+        "value": 2,
+        "status": "scored",
+        "trace": [
+        "H15",
+        "H16",
+        "H17",
+        "H18",
+        "K3",
+        "K4"
+        ]
+    },
+    "failures": {
+        "value": 4,
+        "status": "scored",
+        "trace": [
+        "O1",
+        "O2",
+        "O7",
+        "H15"
+        ]
+    },
+    "complexity": {
+        "value": 3,
+        "status": "scored",
+        "trace": [
+        "H15",
+        "H16",
+        "H17"
+        ]
+    }
+    }
+}
+]
+}

@@ -1,0 +1,112 @@
+{
+"assignmentId": "m04-storage-selection",
+"commitSha": "REPLACE_AT_SUBMISSION",
+"commands": [
+"make setup",
+"python rebuild.py",
+"make verify",
+"make run"
+],
+"results": {
+"matrix": {
+    "file": "src/m04/storage_matrix.json",
+    "status": "passed",
+    "weightsTotal": 100,
+    "alternativesEvaluated": 4,
+    "decisionStatus": "complete",
+    "pendingScores": 0
+},
+"selection": {
+    "status": "passed",
+    "selectedAlternative": "document",
+    "selectedFamily": "Document",
+    "representative": "MongoDB",
+    "weightedScore": 3.95,
+    "tie": false,
+    "results": [
+    {
+        "id": "document",
+        "name": "Document",
+        "representative": "MongoDB",
+        "weightedPoints": 395,
+        "weightedScore": 3.95
+    },
+    {
+        "id": "column",
+        "name": "Column/Wide-column",
+        "representative": "Apache Cassandra",
+        "weightedPoints": 380,
+        "weightedScore": 3.8
+    },
+    {
+        "id": "graph",
+        "name": "Graph",
+        "representative": "Neo4j",
+        "weightedPoints": 290,
+        "weightedScore": 2.9
+    },
+    {
+        "id": "object",
+        "name": "Object",
+        "representative": "Amazon S3",
+        "weightedPoints": 290,
+        "weightedScore": 2.9
+    }
+    ]
+},
+"criteria": {
+    "queries": 30,
+    "scale": 25,
+    "consistency": 15,
+    "cost": 15,
+    "failures": 10,
+    "complexity": 5
+},
+"tests": {
+    "status": "passed",
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "normalTests": 1,
+    "boundaryTests": 2,
+    "declaredFailureTests": 1,
+    "cases": [
+    "La matriz real valida produce una decision completa",
+    "La escala acepta los valores limite 1 y 5",
+    "Un empate real se conserva sin inventar un criterio de desempate",
+    "Los pesos que no suman 100 son rechazados"
+    ],
+    "declaredFailure": {
+    "condition": "criteria weights do not sum to 100",
+    "expectedError": "MatrixValidationError",
+    "status": "passed"
+    }
+},
+"artifact": "artifacts/m04-storage-selection-results.json",
+"m04Verification": "passed",
+"verificationCommand": "bash scripts/verify_m04.sh",
+"integratedVerification": {
+    "status": "passed",
+    "command": "make verify",
+    "m02TestsPassed": 4,
+    "m03TestsPassed": 4,
+    "m04TestsPassed": 4,
+    "m04DecisionStatus": "complete",
+    "m04SelectedAlternative": "document"
+}
+},
+"assumptions": [
+"La comparacion utiliza el workload CDRL definido en ADR-004 con retencion operacional de 30 dias.",
+"Los escenarios comparados son Inicial con 100 dispositivos, Crecimiento con 1000 dispositivos y Expansion con 10000 dispositivos.",
+"Cada dispositivo genera una lectura cada 60 segundos durante operacion continua.",
+"La sensibilidad de almacenamiento utiliza 256, 512 y 1024 bytes logicos por evento.",
+"Las puntuaciones de costo corresponden al escenario y metodologia documentados en ADR-004 y no representan cotizaciones contractuales.",
+"PostgreSQL conserva los metadatos y contratos relacionales existentes cuando la alternativa NoSQL requiera composicion con ellos."
+],
+"limitations": [
+"No se ejecutaron benchmarks equivalentes de MongoDB, Neo4j, Apache Cassandra y Amazon S3 sobre infraestructura productiva.",
+"Las cifras de costo dependen de precios, regiones, configuraciones y modalidades de servicio que pueden cambiar.",
+"La seleccion de MongoDB es valida para los pesos, workload, supuestos y evidencia definidos para M04; un cambio en esos elementos requiere recalcular la matriz.",
+"El dimensionamiento fisico real de indices, replicacion, compresion, logs, respaldos y metadata requiere medicion posterior."
+]
+}

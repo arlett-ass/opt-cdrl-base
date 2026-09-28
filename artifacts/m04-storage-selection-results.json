@@ -1,0 +1,57 @@
+{
+  "module": "M04",
+  "verification_status": "passed",
+  "matrix_file": "src/m04/storage_matrix.json",
+  "decision": {
+    "weights_total": 100,
+    "alternatives_evaluated": 4,
+    "decision_status": "complete",
+    "results": [
+      {
+        "id": "document",
+        "name": "Document",
+        "representative": "MongoDB",
+        "weighted_points": 395,
+        "weighted_score": 3.95
+      },
+      {
+        "id": "graph",
+        "name": "Graph",
+        "representative": "Neo4j",
+        "weighted_points": 290,
+        "weighted_score": 2.9
+      },
+      {
+        "id": "column",
+        "name": "Column/Wide-column",
+        "representative": "Apache Cassandra",
+        "weighted_points": 380,
+        "weighted_score": 3.8
+      },
+      {
+        "id": "object",
+        "name": "Object",
+        "representative": "Amazon S3",
+        "weighted_points": 290,
+        "weighted_score": 2.9
+      }
+    ],
+    "winners": [
+      "document"
+    ],
+    "tie": false,
+    "pending_scores": []
+  },
+  "tests": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "errors": 0
+  },
+  "scenarios": {
+    "normal": "test_real_matrix_is_valid_and_produces_decision",
+    "boundary_scores": "test_score_boundaries_one_and_five_are_valid",
+    "tie": "test_tie_is_preserved_without_invented_tiebreak",
+    "declared_failure": "test_invalid_weights_are_rejected"
+  }
+}
