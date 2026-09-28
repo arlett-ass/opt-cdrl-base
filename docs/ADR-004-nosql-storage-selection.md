@@ -2,9 +2,9 @@
 
 ## Estado
 
-Propuesto. Están desarrollados el workload, el evento canónico, los escenarios de carga y el análisis de las cuatro alternativas consideradas: Document, Graph, Column y Object Store. También se definieron criterios, pesos, supuestos comunes de escala, consistencia, costo y fallos, junto con hipótesis falsables y propuestas de puntuación.
+Aceptado.
 
-La decisión final del equipo permanece pendiente del cálculo reproducible de la matriz, su validación mediante pruebas y la generación de la evidencia M04. Este documento todavía no declara una alternativa ganadora ni una entrega M04 verificada.
+La matriz ponderada reproducible de M04 fue completada y validada mediante pruebas automatizadas. Con los pesos definidos para consultas, escala/ingestión, consistencia, costo, fallos/disponibilidad y complejidad operativa, la alternativa Document, representada por MongoDB, obtuvo la mayor puntuación con 3.95/5. Apache Cassandra obtuvo 3.80/5, mientras que Neo4j y Amazon S3 obtuvieron 2.90/5. La decisión no presenta empate ni criterios pendientes.
 
 ## Contexto
 
@@ -94,11 +94,23 @@ Para hacer repetible una evaluación futura se propone además:
 
 Para estimar almacenamiento lógico se propone sensibilidad de 256, 512 y 1024 bytes/evento, no tamaños medidos. A 512 bytes, expansión supone 221.184 GB decimales por 30 días antes de índices, relaciones, réplicas, logs y respaldos. Angélica deberá utilizar estos mismos supuestos o documentar los cambios acordados para las cuatro familias.
 
-## Criterios y escala propuestos
+## Criterios y escala utilizados
 
-Los pesos de la guía se conservan como propuesta previa al cálculo: consultas 30 %, escala/ingestión 25 %, consistencia 15 %, costo 15 %, fallos/disponibilidad 10 % y complejidad operativa 5 %. Suman 100 %. Consultas y escala reciben mayor peso por el acceso repetido a eventos y su acumulación; consistencia protege el contrato; costo y operación evitan valorar capacidades sin su mantenimiento.
+La matriz final utiliza los pesos definidos por la guía: consultas 30 %, escala/ingestión 25 %, consistencia 15 %, costo 15 %, fallos/disponibilidad 10 % y complejidad operativa 5 %. En conjunto suman 100 %.
 
-Escala: 1 ajuste muy bajo, 2 bajo, 3 aceptable con adaptaciones, 4 alto con limitaciones identificadas, 5 alto y demostrado para el escenario completo. En complejidad, mayor puntuación significa menor esfuerzo. En costo, mayor puntuación significa menor costo total para garantías equivalentes. Los pesos deben acordarse para las cuatro alternativas antes del cálculo final.
+Consultas y escala reciben el mayor peso por el acceso repetido a eventos y su acumulación. Consistencia protege el contrato del evento; costo y operación permiten comparar las capacidades sin ignorar los recursos y mantenimiento necesarios.
+
+La escala de puntuación utilizada es de 1 a 5:
+
+- 1: ajuste muy bajo.
+- 2: ajuste bajo.
+- 3: ajuste aceptable con adaptaciones.
+- 4: ajuste alto con limitaciones identificadas.
+- 5: ajuste alto y demostrado para el escenario completo.
+
+En complejidad operativa, una puntuación mayor representa menor esfuerzo operativo. En costo, una puntuación mayor representa menor costo total para proporcionar garantías equivalentes.
+
+Los pesos y puntuaciones fueron incorporados a `src/m04/storage_matrix.json` y utilizados por el cálculo reproducible de M04.
 
 ## Alternativa Document
 
@@ -168,53 +180,81 @@ El costo incorpora nodos, relaciones, índices, réplicas, recursos, backups y e
 
 ### Modelo de referencia
 
-Para evaluar la alternativa Column/Wide-column se utiliza Amazon DynamoDB como implementación de referencia basada en partición y ordenamiento por clave, aprovechando que DynamoDB Local ya forma parte de la infraestructura del proyecto. DynamoDB se clasifica específicamente como una base NoSQL key-value/document, por lo que sus resultados no se generalizan automáticamente a motores wide-column clásicos como Cassandra. En esta evaluación se estudian únicamente las propiedades de particionamiento, ordenamiento temporal y patrones de acceso relevantes para el CDRL. Su presencia previa en `docker-compose.yml` no constituye evidencia a favor de su selección ni implica que sea la alternativa ganadora.
+Para evaluar la alternativa Column/Wide-column se utiliza Apache Cassandra como implementación de referencia. Cassandra es una base de datos NoSQL distribuida con un modelo wide-column particionado. DynamoDB Local permanece disponible en la infraestructura del proyecto, pero no se utiliza como representante de esta familia ni constituye evidencia a favor de la selección.
 
-Para las lecturas de telemetría se propone inicialmente una clave primaria compuesta por `device_id` como partition key y `recorded_at_us` como sort key. Esta organización se deriva del workload existente: Q1, Q2 y Q3 acceden a las lecturas principalmente mediante un dispositivo concreto y una dimensión temporal.
+Para las lecturas de telemetría se propone una tabla orientada a consultas por dispositivo y tiempo con una clave primaria equivalente a:
 
-Los elementos de telemetría conservarían `reading_id`, `device_id`, `recorded_at_us`, `received_at_us`, `temperature_c`, `humidity_pct` y `co2_ppm`. La combinación lógica `(device_id, recorded_at_us)` debe continuar siendo única. La precisión temporal y decimal debe seguir las mismas decisiones declaradas en el evento canónico para evitar cambiar el contrato existente.
+```sql
+PRIMARY KEY ((device_id), recorded_at_us)
+```
 
-La clave propuesta es un diseño inicial para evaluación, no una decisión definitiva. Debe comprobarse frente a todos los patrones Q1–Q5 y ante distribuciones uniformes y sesgadas de tráfico. Los accesos que no estén alineados con la clave primaria pueden requerir índices secundarios, estructuras adicionales o composición con los metadatos que permanecen en PostgreSQL.
+`device_id` actúa como partition key y `recorded_at_us` como clustering column. Esta organización se deriva del workload existente: Q1, Q2 y Q3 acceden principalmente a las lecturas de un dispositivo concreto y una dimensión temporal.
+
+Las filas conservarían `reading_id`, `device_id`, `recorded_at_us`, `received_at_us`, `temperature_c`, `humidity_pct` y `co2_ppm`. La combinación `(device_id, recorded_at_us)` identifica lógicamente una lectura. `reading_id` permanece como identificador técnico del evento y no sustituye esa clave. La precisión temporal y decimal debe conservar las decisiones del evento canónico para evitar modificar el contrato existente.
+
+La clave propuesta es un diseño para evaluación, no una decisión definitiva. Debe comprobarse frente a Q1–Q5 y ante distribuciones uniformes y sesgadas de tráfico. Los accesos no alineados con la clave primaria pueden requerir tablas adicionales, índices o composición con los metadatos que permanecen en PostgreSQL.
 
 ### Resolución de consultas
 
 | Consulta | Estrategia propuesta | Costo o limitación |
 | --- | --- | --- |
-| Q1 | Ejecutar una consulta sobre `device_id` y acotar `recorded_at_us` al intervalo inclusivo solicitado, conservando el orden temporal. | El patrón coincide con la clave compuesta propuesta. El costo continúa dependiendo de la cantidad de elementos evaluados y devueltos; debe verificarse con la carga declarada. |
-| Q2 | Consultar la partición del dispositivo en orden temporal descendente y limitar el resultado a una lectura. | El acceso está alineado con dispositivo y tiempo, pero debe conservarse la semántica de ausencia de resultados y el desempate requerido por el contrato actual. |
-| Q3 | Consultar primero el dispositivo y rango temporal y después calcular `COUNT`, `AVG`, `MIN` y `MAX` sobre las lecturas correspondientes o utilizar agregados mantenidos explícitamente. | La clave facilita seleccionar el intervalo, pero no convierte las agregaciones en operaciones constantes; cualquier estructura de agregados introduce escrituras y consistencia adicionales. |
-| Q4 | Mantener los metadatos de dispositivos en PostgreSQL o definir un acceso secundario por `location_id` si se decide duplicarlos en el modelo NoSQL. | `location_id` no pertenece a la clave primaria propuesta. Un índice o copia adicional aumenta almacenamiento, escrituras y necesidades de sincronización. |
-| Q5 | Obtener eventos recientes mediante una estructura temporal adicional o consultar candidatos de las particiones correspondientes y componerlos con el estado y ubicación actuales de los dispositivos antes de ordenar y aplicar el límite global. | La partición por dispositivo no resuelve por sí sola una consulta temporal global. No debe aplicarse el límite antes de filtrar dispositivos activos ni asumirse que una copia de metadatos está inmediatamente sincronizada. |
+| Q1 | Consultar la partición de `device_id` y restringir `recorded_at_us` al intervalo inclusivo solicitado, conservando el orden temporal. | El patrón coincide con partition key y clustering column. El trabajo continúa dependiendo del número de filas del intervalo. |
+| Q2 | Consultar la partición del dispositivo en orden temporal descendente y limitar el resultado a una lectura. | El acceso está alineado con dispositivo y tiempo. Debe conservarse la semántica de ausencia de resultados. |
+| Q3 | Seleccionar primero las filas del dispositivo y rango temporal y calcular las estadísticas en la aplicación o mediante agregados explícitos. | La clave facilita localizar el intervalo, pero la agregación continúa dependiendo de las filas consideradas. Una tabla de agregados añade escrituras y requisitos de consistencia. |
+| Q4 | Mantener dispositivos y ubicaciones en PostgreSQL o crear una tabla orientada a consulta por `location_id` si se decide duplicar esos metadatos. | `location_id` no forma parte de la primary key de telemetría. La duplicación introduce almacenamiento y sincronización adicionales. |
+| Q5 | Crear una estructura adicional orientada a eventos recientes, posiblemente mediante buckets temporales, o consultar candidatos y combinarlos con estado y ubicación actuales desde PostgreSQL. | La partición por dispositivo no resuelve por sí sola una consulta temporal global. El límite debe aplicarse después de filtrar los dispositivos activos. |
 
-### Particionamiento, hot partitions y throughput
+No se propone utilizar `ALLOW FILTERING` como sustituto de un modelo orientado a consultas para Q4 o Q5. Si esos patrones requieren acceso directo desde Cassandra, deberán diseñarse tablas adicionales con claves adecuadas o componerse explícitamente con PostgreSQL.
 
-La evaluación utilizará los mismos escenarios de carga ya definidos para las demás alternativas: 100, 1,000 y 10,000 dispositivos, con una lectura por dispositivo cada 60 segundos. Esto corresponde a 1.67, 16.67 y 166.67 escrituras por segundo en promedio, respectivamente. También se evaluará el caso sincronizado en el que los 10,000 dispositivos del escenario de expansión transmitan dentro del mismo segundo.
+### Particionamiento, concentración y throughput
 
-Usar `device_id` como dimensión de partición permite distribuir dispositivos diferentes entre claves distintas, pero no garantiza por sí solo una distribución uniforme de carga. Debe evaluarse tanto tráfico uniforme como tráfico sesgado, incluyendo el escenario propuesto en el que un dispositivo produce el 10 % de los eventos.
+La evaluación conservará los escenarios comunes de 100, 1,000 y 10,000 dispositivos, con una lectura por dispositivo cada 60 segundos. Esto corresponde a aproximadamente 1.67, 16.67 y 166.67 escrituras por segundo en promedio.
 
-Una hot partition se considerará un riesgo cuando una clave o conjunto reducido de claves concentre una proporción desmedida del throughput. Si las mediciones muestran concentración que limita la ingestión, deberán evaluarse estrategias como particionamiento temporal o write sharding, considerando que aumentar la dispersión también puede hacer más costosas las consultas que necesitan reconstruir el historial completo de un dispositivo.
+También se evaluará la ráfaga sincronizada de 10,000 eventos dentro del mismo segundo y el escenario sesgado donde un dispositivo produce el 10 % del tráfico.
 
-El throughput se registrará como eventos escritos y solicitudes atendidas por segundo bajo el mismo dataset, ventanas y concurrencia definidos para las demás alternativas. No se inferirá rendimiento únicamente a partir de límites documentados del servicio; los límites sirven para diseñar la prueba, mientras que la capacidad efectiva del modelo CDRL requiere medición.
+Usar `device_id` como partition key distribuye dispositivos diferentes entre particiones, pero no garantiza por sí solo una distribución uniforme del throughput. Un dispositivo excepcionalmente activo concentra sus escrituras sobre una misma partición lógica.
+
+Con una lectura por minuto durante 30 días, cada dispositivo produciría 43,200 lecturas durante la retención operacional propuesta. Con un tamaño lógico de referencia de 512 bytes por evento, esto equivale aproximadamente a 22.1 MB lógicos por dispositivo antes de replicación, índices, metadata, compresión y demás overhead físico.
+
+Si el tamaño o actividad de una partición resulta problemático, deberá evaluarse una estrategia con bucket temporal, por ejemplo:
+
+```text
+((device_id, day_bucket), recorded_at_us)
+```
+
+Esta alternativa limita el tamaño de cada partición, pero obliga a consultar varias particiones cuando una ventana cruza diferentes buckets. No se adoptará sin evidencia obtenida con el workload propuesto.
+
+El throughput se registrará utilizando el mismo dataset, ventanas y concurrencia de las demás alternativas. Las capacidades documentadas de Cassandra no se presentarán como rendimiento medido del CDRL.
 
 ### Consistencia e invariantes
 
-La alternativa Column debe preservar el contrato del evento aunque no utilice restricciones relacionales de PostgreSQL. La aplicación o el adaptador deberá validar rangos de métricas, `recorded_at <= received_at`, precisión temporal y asociación con un dispositivo válido.
+La alternativa Column debe preservar el contrato del evento aunque no utilice restricciones relacionales de PostgreSQL. La aplicación o adaptador deberá validar rangos de métricas, `recorded_at <= received_at`, precisión temporal y asociación con un dispositivo válido.
 
-La unicidad lógica `(device_id, recorded_at_us)` debe impedir que un reintento idéntico produzca una segunda lectura. Se propone evaluar escrituras condicionales para rechazar la creación cuando ya exista el elemento correspondiente; un conflicto con valores diferentes no debe sobrescribirse silenciosamente.
+En Cassandra una escritura normal sobre una primary key existente tiene semántica de upsert. Cuando sea necesario rechazar explícitamente una creación cuya clave `(device_id, recorded_at_us)` ya existe, se evaluará una escritura condicional:
 
-Para consultas que requieran lectura posterior a escritura se deberá declarar el nivel de consistencia utilizado. DynamoDB permite lecturas eventualmente consistentes y lecturas fuertemente consistentes sobre la tabla y los índices secundarios locales; los índices secundarios globales ofrecen lecturas eventualmente consistentes. Por ello, si Q4 o Q5 dependen de un GSI o de metadatos duplicados, debe documentarse el posible intervalo de propagación y comprobar que la semántica aceptada por CDRL no se altere.
+```sql
+INSERT ... IF NOT EXISTS
+```
 
-Las transacciones disponibles dentro de DynamoDB no vuelven atómica una operación distribuida entre DynamoDB y PostgreSQL. Si PostgreSQL continúa siendo autoridad para dispositivos y ubicaciones, cualquier sincronización entre ambos almacenamientos debe declarar su política de actualización, reintentos y tratamiento de inconsistencias temporales.
+Esta operación utiliza una lightweight transaction y requiere coordinación adicional, por lo que deberá medirse su impacto. No debe suponerse que un `INSERT` ordinario reproduce el rechazo de unicidad de PostgreSQL.
+
+Para operaciones que necesiten lectura posterior a escritura deberá declararse el consistency level utilizado. Cassandra ofrece niveles configurables como `ONE`, `QUORUM`, `ALL` y `LOCAL_QUORUM`. La configuración seleccionada deberá relacionarse con el replication factor y con la garantía requerida por el CDRL.
+
+Las garantías internas de Cassandra no vuelven atómica una operación distribuida entre Cassandra y PostgreSQL. Si PostgreSQL permanece como autoridad de dispositivos y ubicaciones, cualquier copia de `status` o `location_id` debe declarar su política de sincronización, actualización y reintentos.
 
 ### Costo y fallos
 
-El costo de Column no se estimará únicamente por almacenamiento. Para mantener una comparación equivalente se incluirán capacidad o solicitudes de lectura y escritura, almacenamiento de eventos, índices secundarios, replicación o durabilidad incluida por el servicio, respaldos, transferencia y esfuerzo operativo. Los índices adicionales necesarios para patrones como Q4 o Q5 deben contabilizarse porque agregan almacenamiento y actividad de escritura.
+El costo de Column no se estimará únicamente mediante almacenamiento. La comparación deberá considerar nodos o capacidad de cómputo, almacenamiento de datos, replication factor, tablas o índices adicionales, respaldos, transferencia, monitoreo y esfuerzo operativo.
 
-La valoración monetaria utilizará posteriormente el mismo horizonte de 30 días, volumen de eventos, tamaño lógico por evento, región y garantías definidos para las demás alternativas. Hasta fijar esos parámetros y una modalidad concreta de despliegue no se afirmará que Column sea más barato o más caro.
+Si se evalúa una oferta administrada compatible con Cassandra, deberán contabilizarse sus componentes facturables necesarios para proporcionar garantías equivalentes. Si se evalúa Cassandra autogestionado, deberán contabilizarse explícitamente los recursos de infraestructura y operación necesarios; la ausencia de una licencia comercial no equivale a costo total cero.
 
-Como escenarios de fallo se evaluarán al menos: reintento de una escritura cuya respuesta se perdió, indisponibilidad temporal del servicio, lectura posterior a una escritura confirmada y retraso de una estructura secundaria respecto de la tabla principal. Un reintento no debe crear un duplicado lógico; una escritura no confirmada no debe suponerse persistida; y una consulta que dependa de consistencia eventual debe documentar la degradación aceptada.
+La valoración utilizará el mismo horizonte de 30 días, volumen de eventos, tamaños lógicos y garantías de las demás alternativas. Hasta completar una estimación reproducible no se afirmará que Cassandra sea más barata o más cara que las demás alternativas.
 
-DynamoDB Local sirve para desarrollo y pruebas locales, pero no demuestra por sí mismo disponibilidad, replicación ni comportamiento de fallos del servicio administrado. Por ello, las capacidades documentadas y los resultados de un prototipo local deberán distinguirse explícitamente.
+Los escenarios de fallo incluirán reintento de una escritura cuya respuesta se perdió, indisponibilidad temporal de una réplica, lectura posterior a una escritura confirmada, pérdida temporal de un miembro y recuperación y convergencia de réplicas.
+
+La evaluación deberá registrar replication factor, consistency level y política de reparación. Por ejemplo, con replication factor 3 y `LOCAL_QUORUM`, la disponibilidad efectiva depende de que pueda alcanzarse el número de réplicas requerido por ese nivel; no se generalizará una garantía sin declarar la topología evaluada.
+
+Cuando una réplica está temporalmente indisponible, Cassandra puede conservar hints para intentar reproducir posteriormente las mutaciones pendientes. Hinted handoff no sustituye los procesos de repair necesarios para asegurar la convergencia de réplicas.
 
 ## Alternativa Object Store
 
@@ -308,7 +348,7 @@ Para hacer comparables las estimaciones se fijan los siguientes supuestos:
 - misma expectativa de durabilidad y recuperación;
 - precios consultados en una fecha explícita;
 - precios expresados inicialmente en USD antes de cualquier conversión monetaria;
-- para servicios AWS, utilizar Mexico (Central), `mx-central-1`, cuando el servicio evaluado esté disponible y la modalidad analizada sea comparable; A la fecha de esta evaluación, DynamoDB, Amazon S3 y MongoDB Atlas sobre AWS documentan disponibilidad en `mx-central-1`. Neo4j Aura documenta Mexico Central para determinados tiers. La disponibilidad y modalidad deberán volver a verificarse si la estimación se repite posteriormente.
+- para servicios AWS, utilizar Mexico (Central), `mx-central-1`, cuando el servicio evaluado esté disponible y la modalidad analizada sea comparable; para Amazon S3 y servicios desplegados directamente sobre infraestructura AWS se priorizará esa región. Para MongoDB Atlas y Neo4j Aura deberá registrarse explícitamente la región y modalidad realmente utilizada en la estimación. Si Apache Cassandra se evalúa de forma autogestionada sobre AWS, se utilizará infraestructura de una región disponible y se documentarán cómputo, almacenamiento, replicación y respaldos por separado. La disponibilidad regional y los precios deberán volver a verificarse si la estimación se repite posteriormente.
 - si una alternativa no dispone de una oferta equivalente en esa región, deberá declararse la región utilizada y tratar la diferencia como una limitación de la comparación.
 
 No se utilizarán créditos educativos, promociones, Free Tier ni descuentos temporales para determinar qué alternativa obtiene mejor puntuación, porque no representan el costo normal y reproducible de operación.
@@ -337,9 +377,9 @@ Una puntuación 3 no se utilizará como sustituto de información faltante. Si t
 
 La puntuación de costo no representa una cotización contractual ni una factura exacta. Representa el costo relativo esperado de satisfacer el workload CDRL bajo los mismos supuestos de volumen, retención, consultas y garantías.
 
-La comparación utiliza servicios administrados como referencia cuando existe una modalidad comparable. Para AWS se prioriza `mx-central-1` (Mexico Central). MongoDB Atlas dispone de despliegues dedicados sobre AWS en esa región; DynamoDB y Amazon S3 también están disponibles en ella. Neo4j Aura dispone de Mexico Central en determinados niveles de servicio, por lo que cualquier comparación deberá registrar explícitamente el tier utilizado.
+La comparación utiliza servicios administrados como referencia cuando existe una modalidad comparable. Para servicios AWS se prioriza `mx-central-1` (Mexico Central) cuando la modalidad necesaria esté disponible. MongoDB Atlas y Neo4j Aura se evaluarán con el tier, proveedor cloud y región explícitamente declarados. Apache Cassandra se evaluará como despliegue autogestionado y deberá incluir los recursos necesarios para replicación, almacenamiento, respaldos y operación. Amazon S3 se evaluará con su modelo de cobro por almacenamiento, solicitudes y componentes adicionales requeridos para satisfacer Q1–Q5.
 
-Las tecnologías poseen modelos de facturación diferentes. Document y Graph requieren capacidad de base de datos suficiente para mantener los datos operacionales, índices y procesamiento de consultas; Column puede facturar almacenamiento y actividad de lectura/escritura según la modalidad; Object Store factura principalmente almacenamiento, solicitudes y servicios adicionales de procesamiento. Por ello, comparar únicamente USD por GB produciría una conclusión inválida.
+Las tecnologías poseen modelos de facturación diferentes. Document y Graph requieren capacidad de base de datos suficiente para mantener los datos operacionales, índices y procesamiento de consultas; Column/Cassandra requiere contabilizar cómputo, almacenamiento, replicación, respaldos y operación según la modalidad de despliegue; Object Store factura principalmente almacenamiento, solicitudes y servicios adicionales de procesamiento. Por ello, comparar únicamente USD por GB produciría una conclusión inválida.
 
 Para cada alternativa se contabilizarán los componentes que realmente sean necesarios para satisfacer Q1–Q5. Si una alternativa necesita índices secundarios, capacidad adicional, un catálogo, un motor de consulta o sincronización con PostgreSQL, estos componentes no se considerarán gratuitos.
 
@@ -349,8 +389,131 @@ Las puntuaciones siguientes son relativas al diseño CDRL y deberán revisarse s
 | --- | --- | --- |
 | Document / MongoDB | cluster operacional, almacenamiento de documentos, índices, replicación/alta disponibilidad, backups, transferencia y operación | El crecimiento de eventos e índices exige dimensionar capacidad del cluster; Q1–Q5 se resuelven mayoritariamente dentro del mismo motor. |
 | Graph / Neo4j | capacidad del cluster, nodos, relaciones, índices, almacenamiento, backups y operación | El modelo agrega relaciones y estructuras que el workload directo dispositivo-tiempo no explota intensivamente; la capacidad necesaria debe medirse antes de fijar una factura. |
-| Column / DynamoDB | almacenamiento, escrituras, lecturas, índices secundarios, backups y transferencia | El modelo se alinea con Q1/Q2, pero estructuras adicionales para Q4/Q5 aumentan almacenamiento y actividad de escritura/lectura. |
+| Column / Apache Cassandra | nodos de cómputo, almacenamiento, replication factor, tablas o índices adicionales, backups, transferencia, monitoreo y operación | El modelo se alinea con Q1/Q2, pero Q4/Q5 pueden requerir tablas adicionales o composición con PostgreSQL. En un despliegue autogestionado deben contabilizarse explícitamente infraestructura, replicación y esfuerzo operativo. |
 | Object / S3 | almacenamiento de objetos, solicitudes, transferencia, lifecycle y procesamiento/catálogo adicional | El almacenamiento histórico puede ser económico, pero reproducir Q1–Q5 operacionalmente requiere componentes adicionales que deben contabilizarse. |
+
+#### Estimación reproducible de referencia
+
+Para evitar comparar únicamente precios mínimos de entrada, se toma como referencia el escenario Expansión con 10,000 dispositivos, 432,000,000 eventos durante 30 días y 512 bytes lógicos por evento. Esto representa 221.184 GB lógicos antes de índices, relaciones, replicación, logs, compresión y respaldos.
+
+La estimación no pretende constituir una cotización contractual ni demostrar capacidad mediante benchmark. Su objetivo es proporcionar una base reproducible para comparar el orden de magnitud del costo y los componentes necesarios para satisfacer el mismo workload.
+
+Para las alternativas cuyo proveedor factura por hora se utiliza un mes de referencia de 30 días, equivalente a 720 horas. Los precios consultados corresponden al 27 de septiembre de 2026. Cuando el proveedor publica precios dependientes de región, configuración o consumo, esa condición se conserva explícitamente como una limitación de la estimación.
+
+| Alternativa | Configuración de referencia | Costo de referencia | Observaciones |
+| --- | --- | ---: | --- |
+| Document / MongoDB Atlas | Atlas Dedicated sobre AWS. Se utiliza M30 como referencia de capacidad: 8 GB RAM, 2 vCPU y rango configurable de almacenamiento de hasta 512 GB. | M30 base: aproximadamente USD 388/mes a USD 0.54/h. La documentación de Atlas ejemplifica aproximadamente USD 468/mes cuando M30 se configura con 200 GB de almacenamiento. | El escenario Expansión representa 221.184 GB lógicos antes de índices y overhead, por lo que ni el precio base ni el ejemplo de 200 GB deben interpretarse como una cotización completa del escenario. Atlas factura capacidad personalizada de almacenamiento, backups y transferencia adicional según configuración y región. |
+| Graph / Neo4j AuraDB | AuraDB Professional dimensionado por memoria y almacenamiento. Se utiliza como referencia la configuración de 64 GB RAM, 12 CPU y 128 GB de almacenamiento. | USD 5.76/h, equivalentes a USD 4,204.80/mes. | Los 128 GB incluidos son inferiores a los 221.184 GB lógicos del escenario Expansión y todavía no contemplan el overhead propio de nodos, relaciones e índices. Para tamaños superiores puede ser necesario utilizar AuraDB Business Critical u otra configuración de mayor capacidad, incrementando el costo. |
+| Column / Apache Cassandra | Clúster autogestionado de tres nodos EC2 `m6i.xlarge` utilizado únicamente como configuración reproducible de costeo, con replication factor 3 y 300 GB de almacenamiento gp3 por nodo. | Cómputo: `3 × USD 0.192/h × 720 h = USD 414.72/mes`. Almacenamiento: `3 × 300 GB × USD 0.08/GB-mes = USD 72.00/mes`. Piso de infraestructura: aproximadamente USD 486.72/mes. | Los precios utilizados corresponden a referencias publicadas para `us-east-1`. El cálculo no demuestra mediante benchmark que `m6i.xlarge` sea el dimensionamiento definitivo para CDRL. Tampoco incluye snapshots, transferencia, monitoreo ni esfuerzo operativo, por lo que USD 486.72 constituye un piso reproducible de infraestructura y no una factura completa. |
+| Object / Amazon S3 + Athena | Amazon S3 Standard para almacenar eventos agrupados en objetos y Amazon Athena como componente de consulta de referencia para representar el procesamiento necesario para Q1–Q5. | S3 Standard: `221.184 GB × USD 0.023/GB-mes ≈ USD 5.09/mes` de almacenamiento lógico. Con la carga base de 10 solicitudes/s durante 30 días se obtienen 25,920,000 consultas. Con el mínimo facturable de 10 MB por consulta en Athena, el piso teórico representa 259.2 TB procesados y aproximadamente USD 1,296/mes a USD 5/TB. | El costo aislado de S3 es bajo, pero no representa por sí mismo una solución operacional equivalente para Q1–Q5. El cálculo de Athena representa un piso teórico basado en el mínimo facturable por consulta. Compresión, particionamiento y formatos columnares pueden reducir los bytes realmente escaneados cuando una consulta supera ese mínimo, mientras que catálogos, índices, transferencia u otros servicios adicionales también deben contabilizarse si forman parte de la solución. |
+
+##### Cálculos reproducibles
+
+**MongoDB Atlas**
+
+La documentación pública de MongoDB indica que un clúster M30 sobre AWS tiene un precio base de aproximadamente USD 0.54 por hora:
+
+```text
+USD 0.54/h × 24 h/día × 30 días = USD 388.80/mes
+```
+
+MongoDB también documenta un ejemplo donde M30 con 200 GB de almacenamiento aumenta aproximadamente a USD 0.65 por hora:
+
+```text
+USD 0.65/h × 24 h/día × 30 días = USD 468.00/mes
+```
+
+Estos valores se utilizan únicamente como referencia porque el escenario CDRL contiene 221.184 GB lógicos antes de índices, journals, metadata y demás overhead físico.
+
+**Neo4j AuraDB**
+
+AuraDB Professional publica para 64 GB de memoria, 12 CPU y 128 GB de almacenamiento:
+
+```text
+USD 5.76/h × 730 h de referencia del proveedor = USD 4,204.80/mes
+```
+
+La capacidad incluida de 128 GB es inferior a los 221.184 GB lógicos del escenario Expansión. Por ello, USD 4,204.80 tampoco representa una cotización completa para almacenar todo el escenario CDRL; se utiliza como evidencia del orden de magnitud del costo y de la necesidad de una configuración superior.
+
+**Apache Cassandra**
+
+Para obtener una referencia reproducible de infraestructura se utiliza un clúster de tres nodos EC2 `m6i.xlarge`.
+
+Cómputo:
+
+```text
+3 nodos × USD 0.192/h × 720 h
+= USD 414.72/mes
+```
+
+Almacenamiento gp3:
+
+```text
+3 nodos × 300 GB × USD 0.08/GB-mes
+= USD 72.00/mes
+```
+
+Piso estimado:
+
+```text
+USD 414.72 + USD 72.00
+= USD 486.72/mes
+```
+
+El uso de 300 GB por nodo permite representar explícitamente el efecto de mantener copias distribuidas con replication factor 3, pero no sustituye una medición del tamaño físico real después de compresión, SSTables, compaction, índices, commit logs y respaldos.
+
+**Amazon S3 y Athena**
+
+Almacenamiento lógico de referencia en S3 Standard:
+
+```text
+221.184 GB × USD 0.023/GB-mes
+≈ USD 5.09/mes
+```
+
+La carga base definida para la evaluación es de 10 solicitudes por segundo:
+
+```text
+10 consultas/s
+× 60 s/min
+× 60 min/h
+× 24 h/día
+× 30 días
+= 25,920,000 consultas/mes
+```
+
+Athena factura por datos procesados y documenta un mínimo facturable de 10 MB por consulta. Utilizando únicamente ese mínimo:
+
+```text
+25,920,000 consultas
+× 10 MB
+= 259,200,000 MB
+≈ 259.2 TB
+```
+
+Con una referencia de USD 5 por TB procesado:
+
+```text
+259.2 TB × USD 5/TB
+= USD 1,296/mes
+```
+
+Este cálculo no afirma que todas las consultas de CDRL deban implementarse individualmente con Athena. Su propósito es demostrar que el precio de almacenamiento de S3 no puede utilizarse de forma aislada para representar el costo de una arquitectura que debe responder Q1–Q5 con la frecuencia operacional definida. Una arquitectura que introduzca caching, agregación, índices o un motor adicional deberá contabilizar también dichos componentes.
+
+##### Puntuación relativa del criterio de costo
+
+A partir de las estimaciones anteriores y de las limitaciones documentadas, se utiliza la siguiente valoración relativa para el workload CDRL:
+
+| Alternativa | Puntuación de costo | Justificación |
+| --- | ---: | --- |
+| Document / MongoDB Atlas | 4 | Mantiene Q1–Q5 principalmente dentro de un único motor y presenta un costo de referencia menor que las alternativas con mayor sobrecosto estructural. Sin embargo, la capacidad física necesaria para Expansión todavía debe dimensionarse por encima del ejemplo de 200 GB, por lo que no recibe puntuación 5. |
+| Graph / Neo4j AuraDB | 1 | La configuración de referencia de USD 4,204.80/mes todavía ofrece únicamente 128 GB de almacenamiento, menos que el volumen lógico del escenario Expansión, y una configuración mayor incrementaría el costo. |
+| Column / Apache Cassandra | 3 | El piso reproducible de infraestructura es aproximadamente USD 486.72/mes antes de respaldos, transferencia, monitoreo y operación. Su costo es intermedio y depende del dimensionamiento y esfuerzo operativo del clúster autogestionado. |
+| Object / Amazon S3 + Athena | 2 | S3 ofrece almacenamiento muy económico, pero satisfacer el workload operacional Q1–Q5 requiere procesamiento adicional. Bajo la carga base declarada, incluso el mínimo facturable de Athena genera un costo de consulta materialmente superior al costo de almacenamiento aislado. |
+
+Ninguna alternativa recibe puntuación 5 porque la definición del criterio exige un costo muy bajo respaldado por una estimación reproducible para el escenario completo. Todas las alternativas conservan componentes, dimensionamientos o limitaciones que impiden realizar esa afirmación.
+
+Estos puntajes representan exclusivamente la comparación del workload y los supuestos definidos para CDRL. No constituyen una afirmación general de que una tecnología sea siempre más barata que otra. Cambios en región, tamaño físico real, compresión, índices, patrón de consultas, frecuencia de lectura, modalidad administrada o precios del proveedor requieren recalcular este criterio.
 
 ### Escenarios comunes de fallo
 
@@ -404,7 +567,7 @@ Ninguna hipótesis de esta tabla se presenta como medida. Puede incorporarse a l
 | H11 | Column resuelve Q1 y Q2 mediante acceso dirigido por `device_id` y rango/orden temporal sin recorrer todos los eventos del sistema. | Ejecutar Q1/Q2 sobre el mismo dataset y registrar operaciones y elementos evaluados; rechazar si el patrón requiere un scan global para ventanas selectivas. |
 | H12 | La estrategia de partición de Column distribuye la ingestión cuando el tráfico entre dispositivos es uniforme. | Registrar distribución y throughput durante el escenario uniforme; rechazar la configuración si una fracción reducida de claves concentra de forma desproporcionada la carga sin que el workload lo justifique. |
 | H13 | Un dispositivo que genera el 10 % del tráfico permite detectar y cuantificar riesgo de hot partition en Column. | Ejecutar la carga sesgada y comparar distribución, throttling y throughput con el escenario uniforme; rechazar la estrategia si la concentración impide satisfacer la carga declarada. |
-| H14 | La unicidad lógica `(device_id, recorded_at_us)` puede conservarse en Column frente a reintentos. | Insertar un evento, repetir exactamente su clave y comprobar que no aparece una segunda lectura; rechazar si el reintento produce un duplicado lógico. |
+| H14 | La unicidad lógica `(device_id, recorded_at_us)` puede conservarse en Column frente a reintentos. | Insertar un evento en Cassandra, repetir exactamente su primary key y comprobar la semántica de upsert. Después ejecutar una creación condicional con `IF NOT EXISTS` y verificar que la segunda creación no se aplique. | Cassandra utiliza upsert para escrituras ordinarias; cuando CDRL requiera semántica explícita de rechazo por existencia deberá utilizarse una lightweight transaction y medirse su costo de coordinación. |
 | H15 | Object Store puede conservar el histórico sin pérdida ni duplicación lógica durante reintentos del proceso de archivado. | Ejecutar una exportación, interrumpirla en puntos controlados y repetirla; rechazar si faltan eventos o aparecen duplicados lógicos en el dataset resultante. |
 | H16 | Una organización de objetos por tiempo y dispositivo reduce los datos considerados por Q1/Q3 históricos respecto de recorrer todo el archivo. | Ejecutar las consultas históricas sobre diferentes ventanas y registrar objetos/bytes procesados; rechazar si una consulta selectiva necesita procesar el histórico completo. |
 | H17 | Object Store puro tiene menor ajuste operacional para Q2/Q5 que para conservación y análisis histórico. | Implementar o describir los componentes mínimos necesarios para Q2/Q5 y registrar si requieren catálogo, índice, motor de consulta o metadata externa; refutar si Object Store por sí solo satisface las consultas con las garantías declaradas. |
@@ -412,22 +575,11 @@ Ninguna hipótesis de esta tabla se presenta como medida. Puede incorporarse a l
 
 H1/H2 no exigen un índice para consultas que devuelven casi todo el dataset: un escaneo puede ser una elección razonable en ese caso. H5 no valida por sí sola latencia ni capacidad; H8 no promete un tiempo de recuperación específico.
 
-## Propuestas de puntuación de las alternativas
+## Puntuaciones finales de las alternativas
 
-Estas son valoraciones de diseño para discusión, respaldadas por fuentes e hipótesis, no puntuaciones de rendimiento observado. El equipo debe aceptar la escala y los pesos antes de integrarlas. No se calculan totales parciales como si constituyeran la decisión final.
+Las siguientes puntuaciones forman parte de la matriz reproducible final de M04. Se derivan del workload, las hipótesis, la documentación técnica, los supuestos comunes y la estimación de costo descritos en este ADR. No representan benchmarks de rendimiento observado, sino una valoración arquitectónica reproducible bajo los criterios y pesos establecidos.
 
-| Criterio | Document | Graph | Justificación y trazabilidad |
-| --- | ---: | ---: | --- |
-| Consultas | 4 | 3 | Document ofrece acceso directo por evento/dispositivo/tiempo, con composición adicional para Q5. Graph cubre relaciones de Q4/Q5, pero Q1–Q3 siguen requiriendo índices y agregación. D1, G1, R1; H1–H4. La diferencia es ajuste estructural, no latencia medida. |
-| Escala/ingestión | 4 | 3 | Document dispone de distribución por shard key; exige diseño de claves y control de sesgo. Graph estándar permite escalar lecturas, pero la escritura por base depende del writer. D4, G2; H5/H6. No implica incapacidad de Graph para los escenarios propuestos. |
-| Consistencia | 4 | 4 | Ambos disponen de mecanismos para operaciones y lecturas causalmente relacionadas; requieren configuración y validación de invariantes. D5, G3/G4; H3/H4/H7. La integración con PostgreSQL queda como riesgo compartido. |
-| Costo | 3 | 2 | Document requiere capacidad e índices para el workload operacional, pero sus estructuras corresponden directamente a los patrones evaluados. Graph añade nodos, relaciones y capacidad de grafo para un workload predominantemente directo dispositivo-tiempo; la valoración es relativa al CDRL y deberá revisarse con dimensionamiento medido. H9/H10/H18. |
-| Fallos/disponibilidad | 4 | 4 | Las topologías replicadas documentadas ofrecen recuperación bajo condiciones; se necesita conservar quorum y comprobar confirmaciones/reintentos. D6, G2; H8. No se asigna 5 porque no se probó el escenario. |
-| Complejidad operativa | 3 | 2 | Document requiere índices, validación y metadatos coherentes. Graph añade nodos/relaciones por evento, consistencia de referencias duplicadas y adaptación numérica. Inferencia de los modelos; H10. Revisar la diferencia si Graph simplifica suficientemente Q5. |
-
-El criterio de costo se integró mediante el modelo operativo común definido en este ADR. Las puntuaciones propuestas utilizan el mismo horizonte, workload, retención, componentes de costo y garantías para las cuatro alternativas. David deberá conservar estos valores y supuestos en la matriz reproducible, salvo que el equipo acuerde y documente una modificación respaldada por nueva evidencia.
-
-### Propuestas de puntuación Column y Object
+### Puntuaciones finales de Column y Object
 
 Estas valoraciones utilizan la misma escala 1–5 definida para Document y Graph. Representan ajuste arquitectónico respaldado por documentación, supuestos comunes e hipótesis falsables; no representan resultados de rendimiento medido. Las puntuaciones de costo utilizan el modelo comparativo común definido en este ADR y deberán revisarse si mediciones o cotizaciones posteriores contradicen sus supuestos.
 
@@ -435,9 +587,9 @@ Estas valoraciones utilizan la misma escala 1–5 definida para Document y Graph
 | --- | ---: | ---: | --- |
 | Consultas | 4 | 2 | Column se alinea directamente con Q1/Q2 mediante dispositivo y tiempo y permite seleccionar el intervalo de Q3, aunque Q4/Q5 requieren estructuras o composición adicionales. Object puede organizar históricos por dispositivo/tiempo, pero Q2/Q5 operacionales requieren procesamiento o metadata adicional. C1–C5, O1/O3; H11, H16/H17. |
 | Escala/ingestión | 4 | 4 | Column permite distribuir eventos por claves, condicionado por la selección de partition key y tráfico sesgado. Object está diseñado para almacenar grandes volúmenes, aunque la escala de almacenamiento no demuestra eficiencia de Q1–Q5. C4, O1/O3; H12/H13/H16. |
-| Consistencia | 4 | 3 | Column dispone de opciones de lectura fuerte para la tabla y mecanismos condicionales para proteger escrituras, con limitaciones de consistencia en estructuras secundarias. Object ofrece consistencia fuerte de objetos, pero conservar invariantes y sincronización con el almacenamiento operacional depende del proceso de archivado. C6–C8, O2; H14/H15. |
-| Costo | 4 | 4 | Column evita mantener una topología de base autogestionada en la referencia administrada y permite asociar costo con almacenamiento y actividad, aunque Q4/Q5 pueden añadir índices y operaciones. Object presenta buen ajuste económico para archivo histórico, pero su puntuación no supone que pueda reemplazar gratuitamente el almacenamiento operacional; cualquier catálogo o motor de consulta adicional debe contabilizarse. H15–H18. |
-| Fallos/disponibilidad | 4 | 4 | Ambos representantes documentan mecanismos administrados de disponibilidad y durabilidad, pero la comparación debe incluir reintentos, fallos parciales y componentes externos. No se asigna 5 sin evidencia específica del escenario CDRL. C6–C8, O1/O2; H14/H15. |
+| Consistencia | 4 | 3 | Column/Cassandra permite configurar niveles de consistencia como `ONE`, `QUORUM`, `ALL` y `LOCAL_QUORUM`; la garantía efectiva depende del replication factor y del nivel seleccionado. Las creaciones que deban rechazar una clave existente requieren `IF NOT EXISTS` mediante lightweight transactions. Object/S3 ofrece garantías distintas y cualquier composición con metadatos externos debe evaluarse por separado. | C6, C7, O6 |
+| Costo | 3 | 2 | Column/Cassandra presenta un piso reproducible de aproximadamente USD 486.72/mes para tres nodos EC2 y almacenamiento gp3, antes de respaldos, monitoreo, transferencia y operación. Object/S3 tiene almacenamiento aislado muy económico, pero satisfacer la carga operacional Q1–Q5 requiere procesamiento adicional; bajo la carga base declarada, el mínimo facturable utilizado para Athena produce un piso teórico de aproximadamente USD 1,296/mes. | H18, K1, K2, K3, K4 |
+| Fallos/disponibilidad | 4 | 4 | Column/Cassandra utiliza replicación entre nodos y mecanismos como hinted handoff y repair para recuperación y convergencia; su tolerancia efectiva depende de la topología, replication factor y consistency level. Object/S3 posee mecanismos administrados distintos. La comparación debe mantener escenarios equivalentes de reintento, indisponibilidad y recuperación. | C1, C8, O7 |
 | Complejidad operativa | 3 | 3 | Column exige diseñar claves, índices y sincronización de metadatos para Q4/Q5. Object simplifica conservación de históricos pero requiere procesos de archivado y componentes adicionales para reproducir consultas operacionales. Inferencia del diseño; H11–H17. |
 
 ### Modelo de costo asociado a H9 y H18
@@ -461,22 +613,31 @@ Por tanto, los nodos, relaciones y operación específica de un motor graph intr
 - El contrato existente permite comparar resultados y no solo características comerciales.
 - Las propuestas exigen preservar unicidad, precisión y metadatos actuales; la flexibilidad no elimina esas obligaciones.
 - Agregar un motor implica respaldos, seguridad, monitoreo y sincronización adicionales. Los roles PostgreSQL de M03 no configuran permisos del motor nuevo.
-- No se desplegaron MongoDB, Neo4j ni servicios cloud administrados de DynamoDB o Amazon S3 para ejecutar benchmarks equivalentes; DynamoDB Local disponible en el entorno no demuestra las propiedades del servicio administrado. No se ejecutó la carga comparativa completa, no se midieron costos reales y no se simularon todos los escenarios de fallo. Las fuentes documentan capacidades y las hipótesis indican qué falta demostrar.
+- No se desplegaron MongoDB, Neo4j, un clúster Apache Cassandra equivalente ni servicios cloud de Amazon S3 para ejecutar benchmarks equivalentes. DynamoDB Local permanece disponible en el `docker-compose.yml` del proyecto, pero no representa la alternativa Column/Wide-column evaluada y sus resultados no se utilizan como evidencia de rendimiento, disponibilidad o fallos de Cassandra.
 - Las fuentes oficiales current pueden cambiar. Un prototipo deberá fijar versión, edición, topología y configuración antes de validar las hipótesis.
 
-## Integración pendiente del equipo
+## Integración del equipo
 
-Víctor incorporó el workload, el evento canónico, los escenarios de carga y el análisis Document/Graph. Angélica incorporó el análisis Column/Object, los supuestos operativos comunes de escala, consistencia, costo y fallos, las hipótesis correspondientes y las propuestas de puntuación.
+Víctor incorporó el workload, el evento canónico, los escenarios de carga y el análisis Document/Graph. Angélica incorporó el análisis Column/Object, los supuestos de escala, costo, consistencia y fallos. David implementó la matriz reproducible, las pruebas automatizadas, `verify_m04.sh`, el artifact machine-readable y la integración mínima del Makefile.
 
-David deberá implementar la matriz reproducible, sus pruebas, `verify_m04.sh`, el artifact machine-readable y la integración mínima del Makefile. Con esos resultados, el equipo deberá revisar las puntuaciones, registrar la decisión final, completar las consecuencias y generar la evidencia M04.
+La matriz final fue validada con cuatro escenarios automatizados: caso normal, valores límite 1 y 5, empate sin criterio de desempate inventado y fallo declarado cuando los pesos no suman 100. La ejecución de `scripts/verify_m04.sh` confirmó 4/4 pruebas aprobadas y generó `artifacts/m04-storage-selection-results.json` con `decision_status: complete`.
 
 La autoría individual se conserva mediante las ramas, commits y pull requests correspondientes. No se crea un ADR independiente por integrante.
 
 ## Resultado de esta revisión
 
-Se identificaron cinco consultas reales, sus reglas de salida, el contrato del evento y escenarios comparables. Se analizaron las cuatro familias candidatas mediante representantes concretos y se definieron criterios, pesos, hipótesis falsables, supuestos comunes y propuestas de puntuación.
+Se identificaron cinco consultas reales, sus reglas de salida, el contrato del evento y escenarios comparables. Se analizaron las cuatro familias candidatas mediante representantes concretos: MongoDB para Document, Neo4j para Graph, Apache Cassandra para Column/Wide-column y Amazon S3 para Object Store.
 
-La selección final continúa abierta hasta ejecutar el cálculo reproducible de la matriz y revisar su resultado como equipo. El estado del ADR pasará de `Propuesto` a `Aceptado` únicamente cuando la decisión, sus consecuencias y la evidencia M04 estén completas.
+La matriz ponderada reproducible fue completada con los pesos definidos para consultas, escala/ingestión, consistencia, costo, fallos/disponibilidad y complejidad operativa. El cálculo produjo los siguientes resultados:
+
+- Document / MongoDB: 3.95/5.
+- Column / Apache Cassandra: 3.80/5.
+- Graph / Neo4j: 2.90/5.
+- Object / Amazon S3: 2.90/5.
+
+La alternativa seleccionada para M04 es Document, representada por MongoDB, al obtener la mayor puntuación ponderada. No existe empate en primer lugar y no permanecen criterios pendientes.
+
+Esta selección se limita al workload, pesos, hipótesis y evidencia documentados para CDRL. No implica que MongoDB sea universalmente superior a las demás alternativas. Si cambian los volúmenes, regiones, precios, garantías, patrones de consulta o requisitos operativos, la matriz deberá recalcularse.
 
 ## Fuentes
 
@@ -502,14 +663,14 @@ La selección final continúa abierta hasta ejecutar el cálculo reproducible de
 
 ### Column / Wide-column
 
-- C1: [DynamoDB Core Components](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html).
-- C2: [DynamoDB Query](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html).
-- C3: [DynamoDB Sort Key Best Practices](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-sort-keys.html).
-- C4: [DynamoDB Partition Key Design](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html).
-- C5: [DynamoDB Secondary Indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html).
-- C6: [DynamoDB Read Consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html).
-- C7: [DynamoDB Read and Write Operations](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/read-write-operations.html).
-- C8: [DynamoDB Transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transactions.html).
+- C1: [Apache Cassandra — Architecture Overview](https://cassandra.apache.org/doc/stable/cassandra/architecture/overview.html).
+- C2: [Apache Cassandra — CREATE TABLE](https://cassandra.apache.org/doc/latest/cassandra/reference/cql-commands/create-table.html).
+- C3: [Apache Cassandra — Data Manipulation](https://cassandra.apache.org/doc/stable/cassandra/developing/cql/dml.html).
+- C4: [Apache Cassandra — Indexing Concepts](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/indexing/indexing-concepts.html).
+- C5: [Apache Cassandra — Storage-Attached Indexing](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/indexing/sai/sai-overview.html).
+- C6: [Apache Cassandra — Tunable Consistency](https://cassandra.apache.org/doc/stable/cassandra/architecture/dynamo.html).
+- C7: [Apache Cassandra — Guarantees and Lightweight Transactions](https://cassandra.apache.org/doc/stable/cassandra/architecture/guarantees.html).
+- C8: [Apache Cassandra — Hinted Handoff](https://cassandra.apache.org/doc/latest/cassandra/managing/operating/hints.html).
 
 ### Object Store
 
@@ -519,12 +680,19 @@ La selección final continúa abierta hasta ejecutar el cálculo reproducible de
 - O4: [Amazon S3 — Lifecycle management](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html).
 - O5: [Amazon S3 — Storage classes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html).
 - O6: [Apache Parquet Documentation](https://parquet.apache.org/docs/).
+- O7: [Amazon S3 — Service Level Agreement](https://aws.amazon.com/s3/sla/).
 
 ### Costos y regiones
 
-- K1: [AWS — DynamoDB endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/ddb.html).
-- K2: [AWS — Amazon S3 endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/s3.html).
-- K3: [MongoDB Atlas — Amazon Web Services regions](https://www.mongodb.com/docs/atlas/reference/amazon-aws/).
-- K4: [MongoDB Atlas — Cloud Providers and Regions](https://www.mongodb.com/docs/atlas/cloud-providers-regions/).
-- K5: [Neo4j Aura — Regions](https://neo4j.com/docs/aura/managing-instances/regions/).
-- K6: [Neo4j — Pricing](https://neo4j.com/pricing/).
+- K1: [AWS — Amazon EC2 On-Demand Pricing](https://aws.amazon.com/ec2/pricing/on-demand/).
+- K2: [AWS — Amazon EBS Pricing](https://aws.amazon.com/ebs/pricing/).
+- K3: [AWS — Amazon S3 Pricing](https://aws.amazon.com/s3/pricing/).
+- K4: [AWS — Amazon Athena Pricing](https://aws.amazon.com/athena/pricing/).
+- K5: [MongoDB — Atlas Pricing](https://www.mongodb.com/pricing).
+- K6: [MongoDB — Atlas billing and invoice breakdown](https://www.mongodb.com/docs/atlas/billing/invoice-breakdown/).
+- K7: [Neo4j — Aura Pricing](https://neo4j.com/pricing/).
+- K8: [Neo4j — Aura billing dimensions](https://neo4j.com/docs/aura/billing/billing-dimensions/).
+- K9: [AWS — Amazon S3 endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/s3.html).
+- K10: [MongoDB Atlas — Amazon Web Services regions](https://www.mongodb.com/docs/atlas/reference/amazon-aws/).
+- K11: [MongoDB Atlas — Cloud Providers and Regions](https://www.mongodb.com/docs/atlas/cloud-providers-regions/).
+- K12: [Neo4j Aura — Regions](https://neo4j.com/docs/aura/managing-instances/regions/).
