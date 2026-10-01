@@ -1,0 +1,48 @@
+{
+  "valid": {
+    "eventId": "telemetry#42#1790868600123456",
+    "type": "telemetry.reading",
+    "source": "device-42",
+    "timestamp": "2026-10-01T15:30:00.123456Z",
+    "payload": {
+      "readingId": 1001,
+      "deviceId": 42,
+      "receivedAt": "2026-10-01T15:30:01.000000Z",
+      "temperatureC": "23.45",
+      "humidityPct": "51.20",
+      "co2Ppm": "650.00"
+    },
+    "metadata": {"schemaVersion": 1}
+  },
+  "duplicate": {
+    "eventId": "telemetry#42#1790868600123456",
+    "type": "telemetry.reading",
+    "source": "device-42",
+    "timestamp": "2026-10-01T15:30:00.123456Z",
+    "payload": {
+      "readingId": 1001,
+      "deviceId": 42,
+      "receivedAt": "2026-10-01T15:30:01.000000Z",
+      "temperatureC": "23.45",
+      "humidityPct": "51.20",
+      "co2Ppm": "650.00"
+    },
+    "metadata": {"schemaVersion": 1}
+  },
+  "missing_event_id": "telemetry#999#1790868600123456",
+  "invalid": {
+    "eventId": "telemetry#43#1790868600123456",
+    "type": "telemetry.reading",
+    "source": "device-43",
+    "timestamp": "2026-10-01T15:30:00.123456Z",
+    "payload": {
+      "readingId": 1002,
+      "deviceId": 43,
+      "receivedAt": "2026-10-01T15:30:01.000000Z",
+      "temperatureC": "80.01",
+      "humidityPct": "51.20",
+      "co2Ppm": "650.00"
+    },
+    "metadata": {"schemaVersion": 1}
+  }
+}
