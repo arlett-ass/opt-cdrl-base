@@ -12,6 +12,7 @@ verify:
 	@PYTHON="$(PYTHON)" bash scripts/verify_m02.sh
 	@PYTHON="$(PYTHON)" bash scripts/verify_m03.sh
 	@PYTHON="$(PYTHON)" bash scripts/verify_m04.sh
+	@PYTHON="$(PYTHON)" bash scripts/verify_m05.sh
 
 run:
 	@docker compose up
