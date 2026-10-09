@@ -15,6 +15,16 @@ services:
       timeout: 5s
       retries: 10
 
+  # Docker crea el volumen vacio como root; prepara permisos para UID 1000,
+  # que es el usuario predeterminado de DynamoDB Local.
+  dynamodb-init:
+    image: amazon/dynamodb-local:latest
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["chown -R 1000:1000 /home/dynamodblocal/data"]
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+
   dynamodb:
     image: amazon/dynamodb-local:latest
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
@@ -22,6 +32,9 @@ services:
       - "${DYNAMODB_PORT:-8000}:8000"
     volumes:
       - dynamodb_data:/home/dynamodblocal/data
+    depends_on:
+      dynamodb-init:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:
