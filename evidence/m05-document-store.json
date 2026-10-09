@@ -1,0 +1,97 @@
+{
+"assignmentId": "m05-document-store",
+"commitSha": "REPLACE_AT_SUBMISSION",
+"commands": [
+"make setup",
+"python rebuild.py",
+"bash scripts/verify_m05.sh",
+"make verify",
+"make run"
+],
+"results": {
+"store": "DynamoDB",
+"table": "cdrl_events",
+"validation": {
+    "status": "passed",
+    "contract": "src/m05/event_contract.py",
+    "invalidDocumentsRejected": true
+},
+"indexes": {
+    "status": "passed",
+    "primaryKey": "eventId",
+    "declared": [
+    "type-timestamp-index",
+    "source-timestamp-index"
+    ],
+    "queryByType": "type-timestamp-index",
+    "queryBySource": "source-timestamp-index",
+    "scanUsedForPrimaryQueries": false
+},
+"crud": {
+    "status": "passed",
+    "create": "passed",
+    "read": "passed",
+    "update": "passed",
+    "delete": "passed",
+    "duplicateHandling": "passed",
+    "absenceHandling": "passed"
+},
+"tests": {
+    "status": "passed",
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "errors": 0,
+    "normalTests": 1,
+    "boundaryTests": 2,
+    "declaredFailureTests": 1,
+    "cases": [
+    "Caso normal: CRUD completo y consultas por ambos GSIs",
+    "Limite 1: eventId duplicado es rechazado",
+    "Limite 2: ausencia en Read, Update y Delete se maneja de forma controlada",
+    "Fallo declarado: documento invalido es rechazado antes de persistirse"
+    ],
+    "scenarios": {
+    "normal": "test_document_store_normal_flow",
+    "boundaryDuplicate": "test_duplicate_event_is_rejected",
+    "boundaryAbsence": "test_missing_event_is_handled",
+    "declaredFailure": "test_invalid_document_is_rejected"
+    },
+    "declaredFailure": {
+    "condition": "temperatureC supera el limite superior permitido de 80.00",
+    "expectedError": "EventValidationError",
+    "status": "passed"
+    }
+},
+"artifact": "artifacts/m05-document-store-results.json",
+"m05Verification": "passed",
+"verificationCommand": "bash scripts/verify_m05.sh",
+"integratedVerification": {
+    "status": "passed",
+    "command": "make verify",
+    "m02TestsPassed": 4,
+    "m03TestsPassed": 4,
+    "m04TestsPassed": 4,
+    "m05TestsPassed": 4,
+    "m05Table": "cdrl_events",
+    "m05Indexes": [
+    "type-timestamp-index",
+    "source-timestamp-index"
+    ]
+}
+},
+"assumptions": [
+"La implementacion local utiliza DynamoDB Local como respaldo reproducible del entorno AWS Academy.",
+"La tabla documental utilizada por M05 es cdrl_events.",
+"eventId es la identidad logica deterministica del evento.",
+"Las consultas temporales principales se resuelven mediante Query y los GSIs declarados.",
+"Los fixtures utilizados por las pruebas son sinteticos y no contienen datos personales."
+],
+"limitations": [
+"La validacion observada hasta este punto fue ejecutada sobre DynamoDB Local.",
+"Los Global Secondary Indexes de DynamoDB tienen consistencia eventual.",
+"La implementacion actual soporta eventos telemetry.reading con schemaVersion 1.",
+"No se implementa control optimista de concurrencia mediante versionado del documento.",
+"Nuevos patrones de acceso pueden requerir nuevos indices justificados."
+]
+}

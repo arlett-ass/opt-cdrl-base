@@ -1,0 +1,22 @@
+{
+  "module": "M05",
+  "verification_status": "passed",
+  "store": "DynamoDB",
+  "table": "cdrl_events",
+  "indexes": [
+    "type-timestamp-index",
+    "source-timestamp-index"
+  ],
+  "tests": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "errors": 0
+  },
+  "scenarios": {
+    "normal": "test_document_store_normal_flow",
+    "boundary_duplicate": "test_duplicate_event_is_rejected",
+    "boundary_absence": "test_missing_event_is_handled",
+    "declared_failure": "test_invalid_document_is_rejected"
+  }
+}
