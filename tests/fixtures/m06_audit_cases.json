@@ -1,0 +1,26 @@
+{
+  "traceId": "trace-m06-audit-001",
+  "auditContext": {
+    "requestId": "req-m06-audit-001",
+    "environment": "synthetic-test",
+    "password": "fake-password-never-real",
+    "token": "fake-token-never-real",
+    "nested": {
+      "safeField": "safe-value",
+      "secret": "fake-secret-never-real"
+    },
+    "headers": {
+      "Authorization": "Bearer fake-authorization-never-real"
+    },
+    "apiKey": "fake-api-key-never-real",
+    "connectionString": "mongodb://fake.invalid/example"
+  },
+  "sensitiveValues": [
+    "fake-password-never-real",
+    "fake-token-never-real",
+    "fake-secret-never-real",
+    "Bearer fake-authorization-never-real",
+    "fake-api-key-never-real",
+    "mongodb://fake.invalid/example"
+  ]
+}
