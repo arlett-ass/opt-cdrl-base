@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Ejecutar siempre desde la raíz del repositorio.
 PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
@@ -10,7 +9,6 @@ if [[ ! -f "scripts/load_env.sh" ]]; then
     exit 1
 fi
 
-# Cargar configuración
 source scripts/load_env.sh
 load_env_file .env
 
@@ -20,15 +18,17 @@ if [[ -z "${POSTGRES_PASSWORD:-}" ]]; then
     exit 1
 fi
 
-# Python utilizado por los verificadores
 export PYTHON="${PYTHON:-python}"
 
-# Verificaciones integradas
 echo "== CDRL: verificación integrada =="
 
 echo
-echo "== M01 / contrato base =="
+echo "== Base del repositorio =="
 bash scripts/verify_base.sh
+
+echo
+echo "== M01 / contrato de datos =="
+bash scripts/verify_m01.sh
 
 echo
 echo "== M02 / modelo relacional =="
