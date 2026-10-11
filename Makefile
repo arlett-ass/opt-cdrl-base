@@ -2,21 +2,18 @@
 
 PYTHON ?= python
 
+#Prepara la infraestructura, migraciones y datos desde el repositorio
 setup:
-	@mkdir -p artifacts evidence docs db/migrations db/seed src tests
-	@test -f .env.example
-	@echo "CDRL starter base preparada. Configura .env localmente cuando corresponda."
+	@PYTHON="$(PYTHON)" bash scripts/setup.sh
 
+#Ejecuta las verificaciones integradas usando el mismo entorno
 verify:
-	@bash scripts/verify_base.sh
-	@PYTHON="$(PYTHON)" bash scripts/verify_m02.sh
-	@PYTHON="$(PYTHON)" bash scripts/verify_m03.sh
-	@PYTHON="$(PYTHON)" bash scripts/verify_m04.sh
-	@PYTHON="$(PYTHON)" bash scripts/verify_m05.sh
+	@PYTHON="$(PYTHON)" bash scripts/verify_all.sh
 
+#Mantiene los servicios disponibles para uso manual
 run:
 	@docker compose up
 
-# M02: ejecutar después de levantar PostgreSQL y aplicar rebuild.py.
+#Demuestra las consultas parametrizadas de la entrega de m02
 queries:
 	@$(PYTHON) -m db.queries.demo
