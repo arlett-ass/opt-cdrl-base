@@ -16,4 +16,4 @@ run:
 
 #Demuestra las consultas parametrizadas de la entrega de m02
 queries:
-	@$(PYTHON) -m db.queries.demo
+	@PYTHON="$(PYTHON)" bash -c 'source scripts/load_env.sh; load_env_file .env; exec "$$PYTHON" -m db.queries.demo'
