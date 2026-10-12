@@ -1,0 +1,47 @@
+{
+  "module": "M06",
+  "verification_status": "passed",
+  "evolution": {
+    "strategy": "coexist-and-explicit-migrate",
+    "supportedVersions": [
+      1,
+      2
+    ],
+    "idempotentMigration": true,
+    "realMigrationVerified": true
+  },
+  "audit": {
+    "operation": "schema.migrate.v1_to_v2",
+    "recordCreated": true,
+    "sensitiveValuesPersisted": false,
+    "retryCreatedDuplicate": false,
+    "traceId": "trace-m06-verifier"
+  },
+  "recovery": {
+    "fixture": "tests/fixtures/m06_recovery_fixture.json",
+    "expectedCount": 3,
+    "restoredCount": 1,
+    "skippedCount": 2,
+    "verifiedCount": 3,
+    "durationMs": 29.7,
+    "integrityPassed": true
+  },
+  "tests": {
+    "normal": "passed",
+    "boundary1": "passed",
+    "boundary2": "passed",
+    "declaredFailure": "passed",
+    "recovery": "passed",
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0
+  },
+  "scenarioTests": {
+    "normal": "test_versioned_store_coexists_and_migrates_without_data_loss",
+    "boundary1": "test_migrating_existing_v2_is_idempotent_and_does_not_write",
+    "boundary2": "test_audit_redacts_secrets_and_retry_does_not_duplicate",
+    "declaredFailure": "test_invalid_fixture_fails_before_any_partial_restore",
+    "recovery": "test_controlled_loss_is_restored_and_measured"
+  }
+}

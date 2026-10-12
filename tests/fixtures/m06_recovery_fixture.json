@@ -1,0 +1,58 @@
+{
+  "fixtureId": "m06-recovery-synthetic-v1",
+  "events": [
+    {
+      "eventId": "telemetry#601#1791288000000000",
+      "type": "telemetry.reading",
+      "source": "device-601",
+      "timestamp": "2026-10-06T12:00:00.000000Z",
+      "payload": {
+        "readingId": 6001,
+        "deviceId": 601,
+        "receivedAt": "2026-10-06T12:00:01.000000Z",
+        "temperatureC": "22.10",
+        "humidityPct": "48.50",
+        "co2Ppm": "610.00"
+      },
+      "metadata": {
+        "schemaVersion": 1
+      }
+    },
+    {
+      "eventId": "telemetry#602#1791288060000000",
+      "type": "telemetry.reading",
+      "source": "device-602",
+      "timestamp": "2026-10-06T12:01:00.000000Z",
+      "payload": {
+        "readingId": 6002,
+        "deviceId": 602,
+        "receivedAt": "2026-10-06T12:01:01.000000Z",
+        "measurements": {
+          "temperatureC": "23.20",
+          "humidityPct": "49.50",
+          "co2Ppm": "620.00"
+        }
+      },
+      "metadata": {
+        "schemaVersion": 2
+      }
+    },
+    {
+      "eventId": "telemetry#603#1791288120000000",
+      "type": "telemetry.reading",
+      "source": "device-603",
+      "timestamp": "2026-10-06T12:02:00.000000Z",
+      "payload": {
+        "readingId": 6003,
+        "deviceId": 603,
+        "receivedAt": "2026-10-06T12:02:01.000000Z",
+        "temperatureC": "24.30",
+        "humidityPct": "50.50",
+        "co2Ppm": "630.00"
+      },
+      "metadata": {
+        "schemaVersion": 1
+      }
+    }
+  ]
+}
