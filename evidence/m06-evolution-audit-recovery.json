@@ -1,0 +1,58 @@
+{
+  "assignmentId": "M06",
+  "title": "Evolución de documentos, auditoría y recuperación",
+  "repository": "arlett-ass/opt-cdrl-base",
+  "officialCommands": [
+    "make setup",
+    "make verify"
+  ],
+  "verification": {
+    "status": "passed",
+    "evolution": {
+      "supportedVersions": [
+        1,
+        2
+      ],
+      "strategy": "coexist-and-explicit-migrate",
+      "idempotentMigration": true
+    },
+    "audit": {
+      "operation": "schema.migrate.v1_to_v2",
+      "recordCreated": true,
+      "sensitiveValuesPersisted": false,
+      "retryCreatedDuplicate": false
+    },
+    "recovery": {
+      "fixture": "tests/fixtures/m06_recovery_fixture.json",
+      "expectedCount": 3,
+      "restoredCount": 1,
+      "skippedCount": 2,
+      "verifiedCount": 3,
+      "integrityPassed": true
+    },
+    "tests": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "artifact": "artifacts/m06-evolution-audit-recovery-results.json",
+  "scenarios": {
+    "normal": "coexistencia v1/v2 y migración v1 a v2",
+    "boundary1": "reintento de migración sobre documento v2",
+    "boundary2": "auditoría sanitizada e idempotente",
+    "declaredFailure": "fixture con schemaVersion no soportada falla antes de escribir",
+    "recovery": "pérdida controlada de un evento y restauración medida"
+  },
+  "assumptions": [
+    "Las pruebas utilizan únicamente fixtures sintéticos.",
+    "DynamoDB Local es el respaldo reproducible del entorno de desarrollo.",
+    "La tabla de eventos conserva el contrato e índices definidos en M05."
+  ],
+  "limitations": [
+    "La recuperación demostrada está limitada a los eventId declarados en el fixture M06.",
+    "La escritura del evento migrado y el registro de auditoría son operaciones separadas y no una transacción atómica.",
+    "durationMs depende del entorno donde se ejecute la verificación."
+  ]
+}

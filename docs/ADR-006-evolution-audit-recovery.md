@@ -2,9 +2,8 @@
 
 ## Estado
 
-Propuesto durante el desarrollo de M06. Esta contribución documenta la decisión
-de versionado de Víctor; el ADR queda pendiente de integrar las decisiones de
-auditoría y recuperación y de completar la verificación del equipo.
+Aceptado después de completar satisfactoriamente la integración de evolución,
+auditoría y recuperación y ejecutar `make verify` con M01-M06 correctamente.
 
 ## Contexto
 
@@ -142,3 +141,93 @@ Angélica Arlett Santiago Serrano:
 `tests/fixtures/m06_audit_cases.json`
 
 `tests/test_m06_audit.py`
+## Decisión — Recuperación controlada y medición (aporte de David)
+
+La recuperación de M06 utiliza exclusivamente fixtures sintéticos conocidos.
+No se realiza recuperación sobre eventos reales ni sobre documentos ajenos al
+conjunto de `eventId` declarado en el fixture.
+
+`load_recovery_fixture()` carga el documento JSON y
+`validate_recovery_fixture()` valida completamente todos los eventos antes de
+que ocurra cualquier escritura.
+
+La validación reutiliza el contrato versionado de M06, por lo que pueden
+recuperarse documentos válidos con `metadata.schemaVersion` 1 o 2. Una versión
+no soportada provoca un fallo antes de comenzar la restauración.
+
+`restore_fixture()` realiza un preflight de todos los `eventId` esperados:
+
+- un evento ausente queda pendiente de restauración;
+- un evento existente y equivalente se contabiliza como `skipped`;
+- un evento existente con el mismo `eventId` pero contenido distinto se
+  considera un conflicto y no se sobrescribe.
+
+Los eventos ausentes se escriben mediante una condición
+`attribute_not_exists(eventId)` para evitar sobrescrituras silenciosas ante
+cambios concurrentes.
+
+Al finalizar se vuelve a consultar cada elemento y se compara su contenido
+normalizado con el fixture.
+
+La medición de recuperación registra:
+
+- `expectedCount`;
+- `restoredCount`;
+- `skippedCount`;
+- `verifiedCount`;
+- `durationMs`;
+- `integrityPassed`.
+
+`durationMs` se obtiene mediante `time.perf_counter()`.
+
+La prueba normal provoca deliberadamente la pérdida de un único evento
+sintético, confirma su ausencia y ejecuta recovery. El resultado esperado es
+tres eventos verificados, uno restaurado y dos omitidos por encontrarse ya
+correctos.
+
+El fallo declarado modifica un fixture para utilizar una `schemaVersion` no
+soportada. La validación completa ocurre antes de las escrituras, por lo que
+ningún documento queda restaurado parcialmente.
+
+### Verificación integrada
+
+`scripts/verify_m06.sh` comprueba las dependencias y fixtures, la conexión con
+DynamoDB, prepara de forma idempotente `cdrl_events` y `cdrl_audit_log`,
+ejecuta las pruebas M06 y realiza una demostración real de evolución,
+auditoría y recuperación.
+
+El verifier genera
+`artifacts/m06-evolution-audit-recovery-results.json` a partir de la ejecución
+real. El artifact contiene los resultados de evolución, auditoría, recovery y
+las pruebas automatizadas.
+
+### Consecuencias de recovery
+
+La estrategia permite demostrar recuperación de forma repetible sin afectar
+datos ajenos a M06.
+
+La prevalidación evita restauraciones parciales ocasionadas por fixtures
+inválidos.
+
+La escritura condicional evita reemplazar silenciosamente un evento creado por
+otro proceso durante recovery.
+
+El procedimiento no pretende sustituir una solución completa de backup y
+disaster recovery para producción. Su alcance es demostrar una recuperación
+controlada, verificable y medible sobre datos sintéticos.
+
+### Autoría técnica de este aporte
+
+Nicolás David Juárez Mendoza:
+
+`src/m06/recovery.py`
+
+`tests/fixtures/m06_recovery_fixture.json`
+
+`tests/test_m06_recovery.py`
+
+`scripts/verify_m06.sh`
+
+`evidence/m06-evolution-audit-recovery.json`
+
+Integración final del ADR-006 y del flujo de verificación M06.
