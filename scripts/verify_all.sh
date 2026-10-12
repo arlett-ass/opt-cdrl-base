@@ -47,4 +47,8 @@ echo "== M05 / almacenamiento documental =="
 bash scripts/verify_m05.sh
 
 echo
-echo "Verificación integrada M01-M05 completada correctamente."
+echo "== M06 / evolución, auditoría y recuperación =="
+bash scripts/verify_m06.sh
+
+echo
+echo "Verificación integrada M01-M06 completada correctamente."
