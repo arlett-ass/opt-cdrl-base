@@ -1,0 +1,49 @@
+{
+  "v1": {
+    "eventId": "telemetry#7071#1792596600123456",
+    "type": "telemetry.reading",
+    "source": "device-7071",
+    "timestamp": "2026-10-21T15:30:00.123456Z",
+    "payload": {
+      "readingId": 7001,
+      "deviceId": 7071,
+      "receivedAt": "2026-10-21T15:30:01.000000Z",
+      "temperatureC": "23.45",
+      "humidityPct": "51.20",
+      "co2Ppm": "650.00"
+    },
+    "metadata": {"schemaVersion": 1}
+  },
+  "v2_equivalent": {
+    "eventId": "telemetry#7071#1792596600123456",
+    "type": "telemetry.reading",
+    "source": "device-7071",
+    "timestamp": "2026-10-21T15:30:00.123456Z",
+    "payload": {
+      "readingId": 7001,
+      "deviceId": 7071,
+      "receivedAt": "2026-10-21T15:30:01.000000Z",
+      "measurements": {
+        "temperatureC": "23.45",
+        "humidityPct": "51.20",
+        "co2Ppm": "650.00"
+      }
+    },
+    "metadata": {"schemaVersion": 2}
+  },
+  "v1_coexisting": {
+    "eventId": "telemetry#7072#1792596660123456",
+    "type": "telemetry.reading",
+    "source": "device-7072",
+    "timestamp": "2026-10-21T15:31:00.123456Z",
+    "payload": {
+      "readingId": 7002,
+      "deviceId": 7072,
+      "receivedAt": "2026-10-21T15:31:01.000000Z",
+      "temperatureC": "24.00",
+      "humidityPct": "50.00",
+      "co2Ppm": "600.00"
+    },
+    "metadata": {"schemaVersion": 1}
+  }
+}

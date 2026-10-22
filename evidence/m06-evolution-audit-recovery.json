@@ -1,10 +1,12 @@
 {
   "assignmentId": "M06",
+  "commitSha": "beb81544a7a4699568dba7d95a1f0377bb34812c",
   "title": "Evolución de documentos, auditoría y recuperación",
   "repository": "arlett-ass/opt-cdrl-base",
   "officialCommands": [
     "make setup",
-    "make verify"
+    "make verify",
+    "make run"
   ],
   "verification": {
     "status": "passed",
