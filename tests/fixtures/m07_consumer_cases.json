@@ -1,0 +1,40 @@
+{
+  "stored_v1": {
+    "eventId": "telemetry#7071#1792596600123456",
+    "type": "telemetry.reading",
+    "source": "device-7071",
+    "timestamp": "2026-10-21T15:30:00.123456Z",
+    "payload": {
+      "readingId": 7001,
+      "deviceId": 7071,
+      "receivedAt": "2026-10-21T15:30:01.000000Z",
+      "temperatureC": "23.45",
+      "humidityPct": "51.20",
+      "co2Ppm": "650.00"
+    },
+    "metadata": {
+      "schemaVersion": 1
+    }
+  },
+  "stored_v2": {
+    "eventId": "telemetry#7071#1792596600123456",
+    "type": "telemetry.reading",
+    "source": "device-7071",
+    "timestamp": "2026-10-21T15:30:00.123456Z",
+    "payload": {
+      "readingId": 7001,
+      "deviceId": 7071,
+      "receivedAt": "2026-10-21T15:30:01.000000Z",
+      "measurements": {
+        "temperatureC": "23.45",
+        "humidityPct": "51.20",
+        "co2Ppm": "650.00"
+      }
+    },
+    "metadata": {
+      "schemaVersion": 2
+    }
+  },
+  "unsupported_consumer_version": 3,
+  "unsupported_stored_schema_version": 99
+}
