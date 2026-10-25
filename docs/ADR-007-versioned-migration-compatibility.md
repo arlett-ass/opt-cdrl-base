@@ -131,27 +131,41 @@ La ausencia del evento se informa con
 Los demás errores de AWS se propagan. No hay reintentos automáticos ni
 sobrescritura incondicional después de un conflicto.
 
-## Compatibilidad y activación de la migración
+### Compatibilidad de consumidores durante la coexistencia
 
-Los campos de las claves permanecen arriba. Por tanto, la migración conserva
-la PK `eventId` y los GSIs `type-timestamp-index` y
-`source-timestamp-index`, sin crear otra tabla de eventos.
+La compatibilidad de consumidores se implementa mediante
+`src/m07/compatibility.py`.
 
-La convivencia v1/v2 permite migrar eventos seleccionados y conservar otros
-en v1. No hay actualización masiva ni migración implícita durante una
-lectura.
+Durante la transición pueden coexistir documentos persistidos con
+`schemaVersion` 1 y 2. El adaptador `adapt_for_consumer()` permite que un
+consumidor v1 lea ambas representaciones sin requerir cambios en el
+documento almacenado.
 
-Angélica debe integrar el adaptador de compatibilidad **antes de activar la
-migración para consumidores que esperan v1**. El adaptador debe reconocer la
-versión persistida y entregar a cada consumidor una representación que
-pueda interpretar, manteniendo identidad y datos. El validador M05 sin ese
-adaptador seguirá rechazando v2. No debe afirmarse que el despliegue de esta
-parte por sí solo garantiza compatibilidad de todos los consumidores.
+Para un documento v1, el adaptador entrega una copia normalizada de la
+representación v1. Para un documento v2, transforma en memoria el bloque
+`payload.measurements` hacia los campos de métricas esperados por el
+consumidor v1:
 
-El resultado de `migrate_event()` permite a la integración de auditoría
-distinguir un cambio real de un no-op mediante `changed`, sin otra lectura
-para decidir si esta llamada escribió. La política y persistencia de esa
-auditoría pertenecen a la integración del equipo.
+- `temperatureC`
+- `humidityPct`
+- `co2Ppm`
+
+La adaptación conserva `eventId`, `type`, `source`, `timestamp`,
+`readingId`, `deviceId` y `receivedAt`.
+
+La adaptación es únicamente de lectura: no realiza escrituras en
+DynamoDB, no ejecuta una migración implícita y no modifica el documento
+persistido ni el objeto recibido por el adaptador.
+
+Actualmente solo se admite explícitamente el consumidor versión 1.
+Una versión de consumidor no soportada produce
+`UnsupportedConsumerVersionError`. Asimismo, un `schemaVersion` persistido
+que no sea soportado por el validador de documentos es rechazado antes de
+realizar cualquier adaptación.
+
+La compatibilidad se limita al contrato definido para los consumidores v1.
+No se garantiza compatibilidad automática con consumidores que esperen
+versiones futuras ni se realiza una migración masiva durante la lectura.
 
 ## Rollback y límites operacionales
 
@@ -237,8 +251,7 @@ ejecutado ni declarado completo un flujo integrado M01–M07.
 
 - **Víctor:** `src/m07/versioning.py`, `src/m07/migration.py`, fixture de
   documentos versionados M07, `tests/test_m07_migration.py` y esta decisión.
-- **Angélica:** adaptación y comprobación de compatibilidad entre los
-  consumidores y las versiones persistidas.
+- **Angelica**: adaptación de consumidores, estrategia de lectura durante la coexistencia v1/v2, fixture de casos de consumidores y pruebas de compatibilidad.
 - **David:** rollback controlado, integración del verificador, reportes y
   evidencia M07.
 
