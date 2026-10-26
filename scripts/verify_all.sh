@@ -24,36 +24,14 @@ if [[ -x ".venv/bin/python" ]]; then
 elif [[ -x ".venv/Scripts/python.exe" ]]; then
     PYTHON_BIN=".venv/Scripts/python.exe"
 
-elif [[ -n "${PYTHON:-}" ]]; then
-
-    if command -v "$PYTHON" >/dev/null 2>&1; then
-        PYTHON_BIN="$PYTHON"
-
-    elif [[ -x "$PYTHON" ]]; then
-        PYTHON_BIN="$PYTHON"
-    fi
-
-fi
-
-
-if [[ -z "$PYTHON_BIN" ]] && command -v python >/dev/null 2>&1; then
+elif command -v python >/dev/null 2>&1; then
     PYTHON_BIN="python"
-fi
 
-
-if [[ -z "$PYTHON_BIN" ]] && command -v python3 >/dev/null 2>&1; then
+elif command -v python3 >/dev/null 2>&1; then
     PYTHON_BIN="python3"
-fi
 
-
-if [[ -z "$PYTHON_BIN" ]]; then
+else
     echo "ERROR: no se encontró Python utilizable." >&2
-    exit 1
-fi
-
-
-if ! "$PYTHON_BIN" -c "import sys" >/dev/null 2>&1; then
-    echo "ERROR: Python no puede ejecutarse: $PYTHON_BIN" >&2
     exit 1
 fi
 
@@ -63,12 +41,13 @@ export PYTHON="$PYTHON_BIN"
 
 if [[ -z "${POSTGRES_PASSWORD:-}" ]]; then
     echo "ERROR: POSTGRES_PASSWORD no está configurada." >&2
-    echo "Ejecuta make setup y verifica tu archivo .env." >&2
     exit 1
 fi
 
 
 echo "Python integrado: $PYTHON_BIN"
+echo "PostgreSQL usuario: ${POSTGRES_USER}"
+echo "PostgreSQL puerto: ${POSTGRES_PORT}"
 
 
 echo
