@@ -1,0 +1,19 @@
+{
+"document_v1": {
+"eventId": "telemetry#7001#20261021T153000123456Z",
+"type": "telemetry.reading",
+"source": "device-7001",
+"timestamp": "2026-10-21T15:30:00.123456Z",
+"payload": {
+    "readingId": 100,
+    "deviceId": 7001,
+    "receivedAt": "2026-10-21T15:30:01.123456Z",
+    "temperatureC": 23.5,
+    "humidityPct": 45,
+    "co2Ppm": 600
+},
+"metadata": {
+    "schemaVersion": 1
+}
+}
+}
