@@ -1,6 +1,6 @@
 {
   "assignmentId": "M07",
-  "commitSha": "2a9877138f3b485b989e5b2af82a5857fac4b622",
+  "commitSha": "1cd97c0e005c3112a90eb5910bdeaade00b44537",
   "title": "Versionado, migración compatible y rollback",
   "repository": "arlett-ass/opt-cdrl-base",
   "officialCommands": [
