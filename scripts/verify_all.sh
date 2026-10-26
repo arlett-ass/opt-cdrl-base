@@ -51,4 +51,8 @@ echo "== M06 / evolución, auditoría y recuperación =="
 bash scripts/verify_m06.sh
 
 echo
-echo "Verificación integrada M01-M06 completada correctamente."
+echo "== M07 / versionado, migración, compatibilidad y rollback =="
+bash scripts/verify_m07.sh
+
+echo
+echo "Verificación integrada M01-M07 completada correctamente."
