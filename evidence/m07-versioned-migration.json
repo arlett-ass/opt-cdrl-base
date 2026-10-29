@@ -1,0 +1,61 @@
+{
+  "assignmentId": "M07",
+  "commitSha": "0dc0f85275c3940e26db78ce39c22277de475b5b",
+  "title": "Versionado, migración compatible y rollback",
+  "repository": "arlett-ass/opt-cdrl-base",
+  "officialCommands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "verification": {
+    "status": "passed",
+    "versioning": {
+      "supportedVersions": [
+        1,
+        2
+      ],
+      "schemaIdentification": true,
+      "strategy": "version-aware-documents"
+    },
+    "compatibility": {
+      "strategy": "dual-read-and-compatible-consumers",
+      "legacyConsumerSupported": true
+    },
+    "migration": {
+      "strategy": "explicit-v1-to-v2-migration",
+      "idempotent": true,
+      "duplicateCreation": false,
+      "businessDataPreserved": true
+    },
+    "rollback": {
+      "tested": true,
+      "strategy": "restore-compatible-state",
+      "syntheticFixture": true
+    },
+    "tests": {
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "artifact": "artifacts/m07-versioned-migration-results.json",
+  "scenarios": {
+    "normal": "migracion v1 a v2 preservando identidad y datos de negocio",
+    "boundary1": "reejecucion de migracion idempotente sin duplicados",
+    "boundary2": "consumidor antiguo v1 leyendo durante coexistencia",
+    "declaredFailure": "schemaVersion no soportada rechazada antes de escribir",
+    "rollback": "rollback probado con fixture sintetico"
+  },
+  "assumptions": [
+    "Las pruebas utilizan únicamente fixtures sintéticos.",
+    "No se utilizan credenciales, datos reales ni información personal.",
+    "La verificación integrada M01-M07 genera artifacts desde ejecuciones reales."
+  ],
+  "limitations": [
+    "El rollback demostrado está limitado a los escenarios definidos en los fixtures M07.",
+    "La estrategia depende del contrato de versiones soportadas por los consumidores.",
+    "La evidencia corresponde al commit validado indicado en commitSha."
+  ]
+}
