@@ -1,6 +1,6 @@
 {
   "assignmentId": "m08-pagination-index-performance",
-  "commitSha": "575df4db6d93b8cfa6614087664eb7b317c34a4e",
+  "commitSha": "40d6e7921a7cb5fd4fb3fa7281fdebba32eb99ae",
   "commands": [
     "make setup",
     "make verify",
@@ -42,7 +42,17 @@
     },
     "benchmarkValidation": "muestras, percentiles, conteos, metodología y comparación comprobados sin repetir mediciones",
     "verifierNegativeCases": 7,
-    "verifyOutputSha256": "6e0afa4e764e11b803514d209d4d0b4814cfdd69807c77dccdf00e38d558c2c6"
+    "verifyOutputSha256": "b0ca2373a62d3110108a58886f3564800438b3551a376bad4784a87c4ede7825",
+    "shallowCheckoutRegression": {
+      "status": "passed",
+      "depth": 1,
+      "historicalCommitAvailable": false,
+      "setupExecutions": 2,
+      "testsPassed": 152,
+      "malformedSha": "rejected",
+      "missingShaWithFullHistory": "rejected",
+      "teacherWorkflow": "unchanged"
+    }
   },
   "benchmark": {
     "path": "artifacts/m08-pagination-benchmark.json",
@@ -64,20 +74,25 @@
     "El dataset utiliza un tipo de evento y variedad de fuentes y timestamps.",
     "commitSha identifica la implementación probada. Este registro se guarda en un commit posterior; el tag final se creará solo tras aprobar los PR y verificar main. Su SHA se anotará en la entrega externa, sin intentar incrustar el hash del propio commit en evidence."
   ],
-  "verifiedAt": "2026-11-01T22:40:44.530575+00:00",
+  "verifiedAt": "2026-11-01T23:09:41.052861+00:00",
   "configuration": {
     "python": "3.14.8",
     "database": "PostgreSQL 16 en Docker Compose",
     "dynamodb": "DynamoDB Local en Docker Compose",
     "benchmarkExecution": "WSL2, Python 3.14.4, boto3 1.42.0; mediciones conservadas",
-    "fixtures": "sintéticos"
+    "fixtures": "sintéticos",
+    "validationPorts": {
+      "postgres": 55433,
+      "dynamodb": 18001,
+      "scope": "servicios temporales aislados, eliminados al concluir"
+    }
   },
   "sourceSha256": {
     "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
     "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
     "tests/test_m08_pagination.py": "b7f41e5ec0fd6f64d902d93fb1a63adc19ebf747a6482a6f8901cbaddf29b4f1",
-    "scripts/verify_m08.sh": "eb741b8b5eb0e050fd801633c853ef28aeb06de4cf188c189f614f525fc95d1c",
+    "scripts/verify_m08.sh": "aa8b252d02c9844016598656a1c033e10ebd17d8c4c70b1f56234d30f494eff4",
     "scripts/verify_all.sh": "dc35321d9253e2587456e0e0c5e607ea3d475bfcd536ab366d4abe85cb89e2d7",
-    "docs/ADR-008-pagination-index-performance.md": "f0f6c8148f3801b2db237e262328d75e37bdb1ffe5cf5388c9362678d9dbeb6f"
+    "docs/ADR-008-pagination-index-performance.md": "f7aa91206763292d8f049fcd47c822dc2823b61504e887ee0d3c076820d77bc1"
   }
 }
