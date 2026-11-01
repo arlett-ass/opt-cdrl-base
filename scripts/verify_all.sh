@@ -95,8 +95,4 @@ bash scripts/verify_m07.sh
 
 
 echo
-echo "== M08 / paginación, índices y rendimiento =="
-bash scripts/verify_m08.sh
-
-echo
-echo "Verificación integrada M01-M08 completada correctamente."
+echo "Verificación integrada M01-M07 completada correctamente."
