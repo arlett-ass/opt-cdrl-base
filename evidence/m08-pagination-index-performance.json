@@ -2,10 +2,10 @@
   "assignmentId": "m08-pagination-index-performance",
   "title": "Paginación, índices y rendimiento — integración de David",
   "repository": "arlett-ass/opt-cdrl-base",
-  "commitSha": null,
+  "commitSha": "5677642031b23d844f7df305139518cd42b67ee6",
   "baseCommitSha": "a824c970761af8a2bc302c6a74dd3fc89e9dc8e7",
   "sourceState": {
-    "description": "Validación sobre HEAD más cambios locales de integración sin commit; no se declara SHA final de entrega.",
+    "description": "Fuentes de integración comprobadas en el commit indicado; un commit posterior registra únicamente esta evidencia y el artifact generado.",
     "sourceSha256": {
       "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
       "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
@@ -15,7 +15,7 @@
       "docs/ADR-008-pagination-index-performance.md": "9ab88ff4c9f0c976802ef9b62a41e27531733e970f4ddc0812cb765c73c350aa"
     }
   },
-  "verifiedAt": "2026-11-01T21:12:54.939252+00:00",
+  "verifiedAt": "2026-11-01T21:23:18.366100+00:00",
   "commands": [
     "bash -n scripts/verify_m08.sh scripts/verify_all.sh",
     "AWS_CONFIG_FILE=/workspace/shared/aws-local-config bash scripts/verify_m08.sh",
@@ -127,9 +127,15 @@
       }
     },
     "artifact": "artifacts/m08-pagination-index-performance-results.json",
-    "artifactSha256": "61bb330267c11c1e912c50dbe2c6e53cad33c415be82c4a5d8fb97460b0b6e98",
+    "artifactSha256": "06b436a620d0604f41271b352cae67726b98997c687754186a1a267f153b648c",
     "testReport": "artifacts/m08-pagination-tests.json",
-    "integration": "scripts/verify_all.sh ejecuta M08 después de M07; Makefile y CI conservados"
+    "integration": "scripts/verify_all.sh ejecuta M08 después de M07; Makefile y CI conservados",
+    "reviewedFiles": [
+      "src/m08/pagination.py",
+      "tests/test_m08_pagination.py",
+      "src/m08/benchmark.py",
+      "artifacts/m08-pagination-benchmark.json"
+    ]
   },
   "assumptions": [
     "Alcance contrastado con Plan_M08_CDRL_actualizado_cursor_nativo.docx, apartados 7–13, y los criterios compartidos por David.",
@@ -137,12 +143,11 @@
     "Las pruebas funcionales crean y eliminan tablas sintéticas propias en DynamoDB Local."
   ],
   "limitations": [
-    "commitSha es null porque estos cambios aún no tienen commit. baseCommitSha y sourceSha256 identifican la base y los archivos ejecutados; falta registrar el commit probado y el tag tras el cierre del equipo.",
     "El benchmark WSL2 existente se validó sin repetir mediciones; no se atribuyen sus latencias a este entorno.",
     "La primera página y la consulta completa devuelven cantidades distintas y no son operaciones equivalentes.",
     "No se garantiza snapshot, consistencia fuerte del GSI, desempate global por eventId ni rendimiento en AWS.",
     "El entorno administrado requirió AWS_CONFIG_FILE=/workspace/shared/aws-local-config, sin credenciales y conservando el perfil de bloqueo; esta ruta es local y no se versiona.",
-    "No se ha publicado una rama remota, PR ni tag.",
-    "La carga del benchmark utiliza un solo tipo de evento, con variedad de fuentes y timestamps; no evalúa múltiples tipos ni índices alternativos."
+    "La carga del benchmark utiliza un solo tipo de evento, con variedad de fuentes y timestamps; no evalúa múltiples tipos ni índices alternativos.",
+    "commitSha identifica el commit de implementación probado. El SHA final del tag se registra en el reporte de entrega; no se intenta incrustar en un archivo el hash de su propio commit."
   ]
 }
