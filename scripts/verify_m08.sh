@@ -61,7 +61,14 @@ commit = evidence.get("commitSha")
 require(commit is None or (isinstance(commit, str) and len(commit) == 40 and all(character in "0123456789abcdef" for character in commit)), "SHA de evidencia inválido")
 require(commit is not None or bool(evidence.get("sourceState")), "evidencia sin commit ni identificación del estado local")
 if commit is not None:
-    require(subprocess.run(["git", "cat-file", "-e", commit + "^{commit}"], capture_output=True).returncode == 0, "el commit declarado en evidence no existe en este checkout")
+    available = subprocess.run(["git", "cat-file", "-e", commit + "^{commit}"], capture_output=True).returncode == 0
+    if available:
+        print("Commit histórico de evidence disponible:", commit)
+    else:
+        shallow = subprocess.check_output(["git", "rev-parse", "--is-shallow-repository"], text=True).strip()
+        require(shallow == "true", "el commit declarado en evidence no existe en este checkout con historial completo")
+        print("Commit histórico de evidence no descargado en este checkout shallow:", commit)
+        print("Formato del SHA validado; su existencia histórica no puede comprobarse aquí. Se ejecutan las pruebas sobre el HEAD actual.")
 
 benchmark_path = Path("artifacts/m08-pagination-benchmark.json")
 benchmark = json.loads(benchmark_path.read_text())

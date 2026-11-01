@@ -139,6 +139,8 @@ Revisar esta decisión si se exige snapshot consistente, desempate único de tim
 
 El verificador imprime `git rev-parse --verify HEAD^{commit}` y comprueba con `git diff --quiet HEAD -- <fuentes M08>` si las fuentes coinciden con ese commit. Si existen cambios locales lo advierte y no presenta HEAD como identificación completa de lo ejecutado. No obtiene un SHA del benchmark ni copia el SHA de un tag anterior. Tampoco sobrescribe evidence en cada prueba.
 
+El workflow del profesor se conserva. En un checkout shallow puede no estar descargado el commit histórico indicado en evidence: se valida su formato y se informa que su existencia no pudo comprobarse localmente, sin impedir las pruebas del HEAD actual. Con historial completo, un SHA histórico inexistente sigue produciendo error. No se inventa otro SHA ni se descarga historial desde el verificador para ocultar esa diferencia.
+
 El flujo acordado es rama de David → PR a `development` → validación del conjunto de los tres integrantes → PR a `main` → validación del commit integrado → tag semanal M08. El tag es una referencia a un commit, no una propiedad de una rama. No se declara final antes de la integración y validación.
 
 `commitSha` en evidence identifica un commit efectivamente probado. Registrar ese resultado requiere un commit posterior de evidencia; un archivo no puede contener el hash de su propio commit porque modificarlo cambiaría ese hash. El tag final y su SHA se registran en la entrega externa, y la evidencia versionada conserva por separado el commit probado y la referencia semanal. No se vuelve a modificar evidence para intentar igualar recursivamente ambos hashes.
