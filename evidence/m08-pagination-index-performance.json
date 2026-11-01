@@ -1,153 +1,34 @@
 {
   "assignmentId": "m08-pagination-index-performance",
-  "title": "Paginación, índices y rendimiento — integración de David",
-  "repository": "arlett-ass/opt-cdrl-base",
-  "commitSha": "5677642031b23d844f7df305139518cd42b67ee6",
-  "baseCommitSha": "a824c970761af8a2bc302c6a74dd3fc89e9dc8e7",
+  "commitSha": null,
   "sourceState": {
-    "description": "Fuentes de integración comprobadas en el commit indicado; un commit posterior registra únicamente esta evidencia y el artifact generado.",
-    "sourceSha256": {
-      "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
-      "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
-      "tests/test_m08_pagination.py": "b7f41e5ec0fd6f64d902d93fb1a63adc19ebf747a6482a6f8901cbaddf29b4f1",
-      "scripts/verify_m08.sh": "5d88d338071ec5a9f8dd60b5ebc0680f9b986dc98e5c2065acb21891091009bc",
-      "scripts/verify_all.sh": "dc35321d9253e2587456e0e0c5e607ea3d475bfcd536ab366d4abe85cb89e2d7",
-      "docs/ADR-008-pagination-index-performance.md": "9ab88ff4c9f0c976802ef9b62a41e27531733e970f4ddc0812cb765c73c350aa"
-    }
+    "description": "Corrección del ADR y del verificador en la rama de David; validación final pendiente de commit."
   },
-  "verifiedAt": "2026-11-01T21:23:18.366100+00:00",
   "commands": [
-    "bash -n scripts/verify_m08.sh scripts/verify_all.sh",
-    "AWS_CONFIG_FILE=/workspace/shared/aws-local-config bash scripts/verify_m08.sh",
-    "AWS_CONFIG_FILE=/workspace/shared/aws-local-config PATH=\"$PWD/.venv/bin:$PATH\" make setup",
-    "AWS_CONFIG_FILE=/workspace/shared/aws-local-config PATH=\"$PWD/.venv/bin:$PATH\" make verify",
+    "make setup",
+    "make verify",
     "make run"
   ],
   "results": {
-    "status": "passed_local_validation",
-    "setup": {
-      "status": "passed",
-      "migrations": 3,
-      "seedReadings": 50
-    },
-    "integratedVerification": {
-      "status": "passed",
-      "scope": "M01-M08",
-      "total": 152,
-      "passed": 152,
-      "failed": 0,
-      "skipped": 0
-    },
-    "m08Tests": {
-      "total": 71,
-      "passed": 71,
-      "failed": 0,
-      "skipped": 0
-    },
-    "scenarios": {
-      "normal_and_integrity": {
-        "status": "passed",
-        "test": "test_real_traversal_has_no_duplicates_or_omissions_and_preserves_m05"
-      },
-      "empty_range": {
-        "status": "passed",
-        "test": "test_real_empty_range_has_no_next_cursor"
-      },
-      "short_page": {
-        "status": "passed",
-        "test": "test_real_fewer_items_than_page_size_returns_the_available_documents"
-      },
-      "invalid_cursor": {
-        "status": "passed",
-        "test": "test_invalid_cursor_is_a_controlled_error_before_query"
-      },
-      "invalid_page_size": {
-        "status": "passed",
-        "test": "test_invalid_page_size_is_rejected_before_query"
-      },
-      "insertions_without_snapshot": {
-        "status": "passed",
-        "test": "test_real_insertions_before_and_after_the_cursor_demonstrate_no_snapshot"
-      },
-      "equal_timestamps": {
-        "status": "passed",
-        "test": "test_real_equal_timestamps_continue_without_claiming_an_event_id_tiebreak"
-      },
-      "json_cursor": {
-        "status": "passed",
-        "test": "test_json_cursor_continues_with_exact_native_key_and_normalized_filters"
-      },
-      "mixed_versions": {
-        "status": "passed",
-        "test": "test_real_mixed_v1_v2_documents_keep_all_data_and_decimal_measurements"
-      }
-    },
-    "run": {
-      "status": "passed_functional_check",
-      "checks": [
-        "PostgreSQL: tres migraciones y 50 lecturas sintéticas",
-        "DynamoDB: cdrl_events y cdrl_audit_log ACTIVE"
-      ],
-      "mode": "docker compose up en primer plano"
-    },
-    "validatorNegativeChecks": {
-      "wrong_p95": "rejected",
-      "wrong_result_count": "rejected",
-      "missing_required_scenario": "rejected",
-      "skipped_test": "rejected",
-      "invalid_evidence": "rejected"
-    },
-    "benchmark": {
-      "path": "artifacts/m08-pagination-benchmark.json",
-      "sha256": "228dc73bc648d83a15907fb427196243499757b03e86a3311c4e6b8375ace5d9",
-      "validation": "stored_measurements_validated_not_rerun",
-      "environment": {
-        "python_version": "3.14.4",
-        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
-        "boto3_version": "1.42.0",
-        "dynamodb_local": true,
-        "dynamodb_port": "8000",
-        "region": "us-east-1"
-      },
-      "records": 10000,
-      "repetitions": 100,
-      "metrics": {
-        "baseline_full_query": {
-          "p50_ms": 794.441,
-          "p95_ms": 970.462
-        },
-        "paginated_first_page": {
-          "p50_ms": 4.794,
-          "p95_ms": 6.338
-        },
-        "paginated_full_traversal": {
-          "p50_ms": 3000.671,
-          "p95_ms": 3186.263
-        }
-      }
-    },
-    "artifact": "artifacts/m08-pagination-index-performance-results.json",
-    "artifactSha256": "06b436a620d0604f41271b352cae67726b98997c687754186a1a267f153b648c",
-    "testReport": "artifacts/m08-pagination-tests.json",
-    "integration": "scripts/verify_all.sh ejecuta M08 después de M07; Makefile y CI conservados",
-    "reviewedFiles": [
-      "src/m08/pagination.py",
-      "tests/test_m08_pagination.py",
-      "src/m08/benchmark.py",
-      "artifacts/m08-pagination-benchmark.json"
-    ]
+    "status": "pending_validation"
+  },
+  "benchmark": {
+    "path": "artifacts/m08-pagination-benchmark.json",
+    "sha256": "228dc73bc648d83a15907fb427196243499757b03e86a3311c4e6b8375ace5d9",
+    "validation": "stored_measurements_not_rerun"
+  },
+  "submission": {
+    "targetBranch": "main",
+    "weeklyTag": "week-08-final",
+    "status": "pending_pull_requests_and_main_validation"
   },
   "assumptions": [
-    "Alcance contrastado con Plan_M08_CDRL_actualizado_cursor_nativo.docx, apartados 7–13, y los criterios compartidos por David.",
-    "Se conserva la paginación de Víctor y el benchmark de Angélica del commit base de development.",
-    "Las pruebas funcionales crean y eliminan tablas sintéticas propias en DynamoDB Local."
+    "Pruebas y paginación de Víctor; benchmark de Angelica; integración, ADR y evidencia de David.",
+    "La integración se revisa mediante PR hacia development y después hacia main."
   ],
   "limitations": [
-    "El benchmark WSL2 existente se validó sin repetir mediciones; no se atribuyen sus latencias a este entorno.",
-    "La primera página y la consulta completa devuelven cantidades distintas y no son operaciones equivalentes.",
-    "No se garantiza snapshot, consistencia fuerte del GSI, desempate global por eventId ni rendimiento en AWS.",
-    "El entorno administrado requirió AWS_CONFIG_FILE=/workspace/shared/aws-local-config, sin credenciales y conservando el perfil de bloqueo; esta ruta es local y no se versiona.",
-    "La carga del benchmark utiliza un solo tipo de evento, con variedad de fuentes y timestamps; no evalúa múltiples tipos ni índices alternativos.",
-    "commitSha identifica el commit de implementación probado. El SHA final del tag se registra en el reporte de entrega; no se intenta incrustar en un archivo el hash de su propio commit."
+    "El benchmark corresponde a DynamoDB Local y WSL2; no garantiza rendimiento en AWS.",
+    "No existe snapshot ante inserciones ni desempate global por eventId.",
+    "El dataset utiliza un tipo de evento y variedad de fuentes y timestamps."
   ]
 }

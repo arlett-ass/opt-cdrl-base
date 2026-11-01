@@ -6,24 +6,21 @@ load_env_file .env
 PYTHON_BIN="${PYTHON:-python3}"
 if [[ -x .venv/bin/python ]]; then PYTHON_BIN=.venv/bin/python; fi
 
-mkdir -p artifacts
-REPORT=artifacts/m08-pagination-tests.json
-RESULT=artifacts/m08-pagination-index-performance-results.json
-# No reutilizar un resultado aprobado de una ejecución anterior.
-rm -f -- "$REPORT" "$RESULT"
+# El reporte de pytest es temporal; el único artifact M08 conservado es el benchmark.
+REPORT="$(mktemp "${TMPDIR:-/tmp}/cdrl-m08-tests.XXXXXX.json")"
+trap 'rm -f -- "$REPORT"' EXIT
 for file in src/m08/pagination.py src/m08/benchmark.py tests/test_m08_pagination.py \
     docs/ADR-008-pagination-index-performance.md evidence/m08-pagination-index-performance.json \
     artifacts/m08-pagination-benchmark.json; do
     [[ -f "$file" ]] || { echo "ERROR: falta $file" >&2; exit 1; }
 done
 "$PYTHON_BIN" -m pytest tests/test_m08_pagination.py -q --json-report --json-report-file="$REPORT"
-"$PYTHON_BIN" - "$REPORT" "$RESULT" <<'PY'
-from datetime import datetime, timezone
+"$PYTHON_BIN" - "$REPORT" <<'PY'
+from datetime import datetime
 import hashlib
 import json
 import math
 from pathlib import Path
-import platform
 import subprocess
 import sys
 
@@ -63,6 +60,8 @@ require(all(evidence.get(field) for field in ("commands", "results", "assumption
 commit = evidence.get("commitSha")
 require(commit is None or (isinstance(commit, str) and len(commit) == 40 and all(character in "0123456789abcdef" for character in commit)), "SHA de evidencia inválido")
 require(commit is not None or bool(evidence.get("sourceState")), "evidencia sin commit ni identificación del estado local")
+if commit is not None:
+    require(subprocess.run(["git", "cat-file", "-e", commit + "^{commit}"], capture_output=True).returncode == 0, "el commit declarado en evidence no existe en este checkout")
 
 benchmark_path = Path("artifacts/m08-pagination-benchmark.json")
 benchmark = json.loads(benchmark_path.read_text())
@@ -112,21 +111,15 @@ require(baseline_p50 > 0, "mediana base nula")
 change = (metrics["paginated_full_traversal"]["p50_ms"] - baseline_p50) / baseline_p50 * 100
 require(abs(benchmark["comparison"]["baseline_vs_paginated_full_p50_change_percent"] - change) <= 0.002, "comparación inconsistente")
 
-sources = ("src/m08/pagination.py", "src/m08/benchmark.py", "tests/test_m08_pagination.py", "scripts/verify_m08.sh", "scripts/verify_all.sh", "docs/ADR-008-pagination-index-performance.md")
-artifact = {
-    "module": "M08", "verification_status": "passed",
-    "verifiedAt": datetime.now(timezone.utc).isoformat(),
-    "baseCommitSha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-    "sourceSha256": {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in sources},
-    "environment": {"python": platform.python_version(), "platform": platform.platform()},
-    "tests": {"total": len(tests), "passed": len(tests), "failed": 0, "skipped": 0},
-    "testReport": sys.argv[1], "scenarios": scenarios,
-    "benchmark": {"path": str(benchmark_path), "sha256": hashlib.sha256(benchmark_path.read_bytes()).hexdigest(),
-                  "validation": "stored_measurements_validated_not_rerun", "environment": environment,
-                  "records": records, "repetitions": repetitions, "metrics": metrics},
-    "limitations": ["DynamoDB Local; no garantiza rendimiento en AWS.", "Cursor sin snapshot ni desempate global por eventId.", "baseCommitSha identifica HEAD; sourceSha256 identifica los archivos efectivamente probados, incluidos cambios sin commit."]
-}
-Path(sys.argv[2]).write_text(json.dumps(artifact, indent=2, ensure_ascii=False) + "\n")
+sources = ("src/m08", "tests/test_m08_pagination.py", "scripts/verify_m08.sh", "scripts/verify_all.sh", "docs/ADR-008-pagination-index-performance.md", str(benchmark_path))
+head = subprocess.check_output(["git", "rev-parse", "--verify", "HEAD^{commit}"], text=True).strip()
+dirty = subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *sources]).returncode
+require(dirty in (0, 1), "no se pudo comprobar el estado de las fuentes")
 print(f"M08: {len(tests)} pruebas aprobadas; benchmark almacenado validado sin repetir mediciones.")
-print("Artifact:", sys.argv[2])
+print("HEAD:", head)
+print("Fuentes M08:", "sin cambios respecto a HEAD" if dirty == 0 else "con cambios locales; HEAD no identifica por sí solo lo probado")
+print("Benchmark:", benchmark_path, "SHA-256:", hashlib.sha256(benchmark_path.read_bytes()).hexdigest())
+for name, values in metrics.items():
+    print(f"{name}: p50={values['p50_ms']} ms, p95={values['p95_ms']} ms")
+print("Evidencia: evidence/m08-pagination-index-performance.json; no se sobrescribe automáticamente.")
 PY
