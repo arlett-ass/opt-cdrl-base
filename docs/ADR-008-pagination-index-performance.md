@@ -125,6 +125,8 @@ La integración se ejecuta después de M07 en `scripts/verify_all.sh`; no requie
 
 David integra y exige esos escenarios aprobados; no duplica las pruebas de paginación. El benchmark se comprueba recalculando sus percentiles, conteos y metodología. Las 71 pruebas incluyen parametrizaciones; el número excede el mínimo de cuatro escenarios solicitado sin cambiar sus criterios.
 
+La salida del verificador organiza seis etapas: archivos, ejecución detallada de pytest, escenarios mínimos y adicionales, evidencia, benchmark y resumen. Los estados y conteos de cada escenario se obtienen del reporte JSON de la ejecución actual, no de mensajes de aprobación incondicionales. El resumen separa los cuatro escenarios mínimos de las 71 ejecuciones parametrizadas; los grupos comparten algunas pruebas y sus conteos no se suman entre sí.
+
 En este entorno administrado fue necesario seleccionar para las ejecuciones locales un archivo de configuración AWS sin credenciales, conservando el perfil de bloqueo inyectado. DynamoDB Local recibe únicamente los valores sintéticos definidos por el cliente existente. Esto no es un requisito de AWS Academy ni una modificación de la aplicación.
 
 La aceptación técnica documenta estas garantías limitadas; no equivale a aprobación del docente, integración remota ni publicación del tag final.

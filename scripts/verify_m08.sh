@@ -6,6 +6,8 @@ load_env_file .env
 PYTHON_BIN="${PYTHON:-python3}"
 if [[ -x .venv/bin/python ]]; then PYTHON_BIN=.venv/bin/python; fi
 
+echo "Python M08: $PYTHON_BIN"
+echo "[1/6] Verificando archivos requeridos..."
 # El reporte de pytest es temporal; el único artifact M08 conservado es el benchmark.
 REPORT="$(mktemp "${TMPDIR:-/tmp}/cdrl-m08-tests.XXXXXX.json")"
 trap 'rm -f -- "$REPORT"' EXIT
@@ -14,7 +16,9 @@ for file in src/m08/pagination.py src/m08/benchmark.py tests/test_m08_pagination
     artifacts/m08-pagination-benchmark.json; do
     [[ -f "$file" ]] || { echo "ERROR: falta $file" >&2; exit 1; }
 done
-"$PYTHON_BIN" -m pytest tests/test_m08_pagination.py -q --json-report --json-report-file="$REPORT"
+echo "OK: archivos M08 presentes."
+echo "[2/6] Ejecutando pruebas M08 (contrato y DynamoDB Local)..."
+"$PYTHON_BIN" -m pytest tests/test_m08_pagination.py -v --tb=short --json-report --json-report-file="$REPORT"
 "$PYTHON_BIN" - "$REPORT" <<'PY'
 from datetime import datetime
 import hashlib
@@ -34,6 +38,7 @@ def positive_int(value):
 def finite_number(value):
     return type(value) in (int, float) and math.isfinite(value) and value >= 0
 
+print("[3/6] Comprobando los cuatro escenarios mínimos y los adicionales...")
 report = json.loads(Path(sys.argv[1]).read_text())
 tests = report.get("tests", [])
 summary = report.get("summary", {})
@@ -54,6 +59,25 @@ scenarios = {
 }
 require(set(scenarios.values()) <= names, "faltan escenarios obligatorios aprobados")
 
+def passed_count(test_names):
+    selected = [test for test in tests if test["nodeid"].split("::")[-1].split("[")[0] in test_names]
+    require(bool(selected) and all(test.get("outcome") == "passed" for test in selected), "escenario sin pruebas aprobadas: " + ", ".join(test_names))
+    return len(selected)
+
+minimum_scenarios = {
+    "Normal: varias páginas, tamaño y continuidad": (scenarios["normal_and_integrity"],),
+    "Límite 1: cero coincidencias y cursor nulo": (scenarios["empty_range"],),
+    "Límite 2: menos resultados que el tamaño de página": (scenarios["short_page"],),
+    "Fallo declarado: cursor o tamaño inválido rechazado": (scenarios["invalid_cursor"], scenarios["invalid_page_size"]),
+}
+for label, test_names in minimum_scenarios.items():
+    print(f"PASSED — {label} (ejecuciones: {passed_count(test_names)})")
+print("Escenarios adicionales:")
+for label, scenario in (("Integridad sin duplicados ni omisiones y compatibilidad M05", "normal_and_integrity"), ("Continuidad con cursor JSON", "json_cursor"), ("Inserciones entre páginas sin snapshot", "insertions_without_snapshot"), ("Timestamps repetidos sin desempate inventado", "equal_timestamps"), ("Documentos v1/v2 y medidas Decimal", "mixed_versions")):
+    print(f"PASSED — {label} (ejecuciones: {passed_count((scenarios[scenario],))})")
+print("Los grupos pueden compartir pruebas; no se suman como ejecuciones distintas.")
+
+print("[4/6] Validando evidence y la referencia histórica del commit...")
 evidence = json.loads(Path("evidence/m08-pagination-index-performance.json").read_text())
 require(evidence.get("assignmentId") == "m08-pagination-index-performance", "identificador de evidencia incorrecto")
 require(all(evidence.get(field) for field in ("commands", "results", "assumptions", "limitations")), "evidencia incompleta")
@@ -70,6 +94,7 @@ if commit is not None:
         print("Commit histórico de evidence no descargado en este checkout shallow:", commit)
         print("Formato del SHA validado; su existencia histórica no puede comprobarse aquí. Se ejecutan las pruebas sobre el HEAD actual.")
 
+print("[5/6] Validando benchmark almacenado, sin repetir mediciones...")
 benchmark_path = Path("artifacts/m08-pagination-benchmark.json")
 benchmark = json.loads(benchmark_path.read_text())
 require(benchmark.get("module") == "M08" and benchmark.get("status") == "passed", "benchmark sin resultado M08 aprobado")
@@ -117,16 +142,22 @@ baseline_p50 = metrics["baseline_full_query"]["p50_ms"]
 require(baseline_p50 > 0, "mediana base nula")
 change = (metrics["paginated_full_traversal"]["p50_ms"] - baseline_p50) / baseline_p50 * 100
 require(abs(benchmark["comparison"]["baseline_vs_paginated_full_p50_change_percent"] - change) <= 0.002, "comparación inconsistente")
+print(f"OK: {records} documentos, {repetitions} repeticiones por escenario, página de {page_size}.")
+for name, values in metrics.items():
+    print(f"{name}: p50={values['p50_ms']} ms, p95={values['p95_ms']} ms")
 
+print("[6/6] Mostrando resumen final y trazabilidad...")
 sources = ("src/m08", "tests/test_m08_pagination.py", "scripts/verify_m08.sh", "scripts/verify_all.sh", "docs/ADR-008-pagination-index-performance.md", str(benchmark_path))
 head = subprocess.check_output(["git", "rev-parse", "--verify", "HEAD^{commit}"], text=True).strip()
 dirty = subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *sources]).returncode
 require(dirty in (0, 1), "no se pudo comprobar el estado de las fuentes")
-print(f"M08: {len(tests)} pruebas aprobadas; benchmark almacenado validado sin repetir mediciones.")
+print(f"Escenarios mínimos: {len(minimum_scenarios)}/{len(minimum_scenarios)} aprobados")
+print(f"Pruebas pytest: {len(tests)}/{len(tests)} aprobadas (incluyen parametrizaciones)")
+print("Benchmark almacenado: validado; no ejecutado nuevamente")
 print("HEAD:", head)
 print("Fuentes M08:", "sin cambios respecto a HEAD" if dirty == 0 else "con cambios locales; HEAD no identifica por sí solo lo probado")
 print("Benchmark:", benchmark_path, "SHA-256:", hashlib.sha256(benchmark_path.read_bytes()).hexdigest())
-for name, values in metrics.items():
-    print(f"{name}: p50={values['p50_ms']} ms, p95={values['p95_ms']} ms")
 print("Evidencia: evidence/m08-pagination-index-performance.json; no se sobrescribe automáticamente.")
+print("Reporte pytest: temporal; se elimina al terminar.")
+print("M08 completado correctamente.")
 PY

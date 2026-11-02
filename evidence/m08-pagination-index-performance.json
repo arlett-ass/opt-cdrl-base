@@ -1,6 +1,6 @@
 {
   "assignmentId": "m08-pagination-index-performance",
-  "commitSha": "40d6e7921a7cb5fd4fb3fa7281fdebba32eb99ae",
+  "commitSha": "92e68dbec6e2f7cfc06f15e71c234fad82da33fe",
   "commands": [
     "make setup",
     "make verify",
@@ -42,7 +42,7 @@
     },
     "benchmarkValidation": "muestras, percentiles, conteos, metodología y comparación comprobados sin repetir mediciones",
     "verifierNegativeCases": 7,
-    "verifyOutputSha256": "b0ca2373a62d3110108a58886f3564800438b3551a376bad4784a87c4ede7825",
+    "verifyOutputSha256": "cbecec48273c63a3ad99d16a8c1ef8618ffb347d8601cfb16cd29c1329274318",
     "shallowCheckoutRegression": {
       "status": "passed",
       "depth": 1,
@@ -52,6 +52,23 @@
       "malformedSha": "rejected",
       "missingShaWithFullHistory": "rejected",
       "teacherWorkflow": "unchanged"
+    },
+    "acceptanceSummary": {
+      "minimumScenarios": 4,
+      "passedScenarios": 4,
+      "pytestExecuted": 71,
+      "pytestPassed": 71,
+      "countsFromCurrentReport": true,
+      "normalExecutions": 3,
+      "emptyRangeExecutions": 1,
+      "shortPageExecutions": 1,
+      "invalidInputExecutions": 39,
+      "groupsAreNotAdditive": true
+    },
+    "summaryRegression": {
+      "missingNormalScenario": "rejected",
+      "skippedTest": "rejected",
+      "parameterCount": "derived_from_report"
     }
   },
   "benchmark": {
@@ -74,7 +91,7 @@
     "El dataset utiliza un tipo de evento y variedad de fuentes y timestamps.",
     "commitSha identifica la implementación probada. Este registro se guarda en un commit posterior; el tag final se creará solo tras aprobar los PR y verificar main. Su SHA se anotará en la entrega externa, sin intentar incrustar el hash del propio commit en evidence."
   ],
-  "verifiedAt": "2026-11-01T23:09:41.052861+00:00",
+  "verifiedAt": "2026-11-01T23:57:51.603872+00:00",
   "configuration": {
     "python": "3.14.8",
     "database": "PostgreSQL 16 en Docker Compose",
@@ -82,8 +99,8 @@
     "benchmarkExecution": "WSL2, Python 3.14.4, boto3 1.42.0; mediciones conservadas",
     "fixtures": "sintéticos",
     "validationPorts": {
-      "postgres": 55433,
-      "dynamodb": 18001,
+      "postgres": 55434,
+      "dynamodb": 18002,
       "scope": "servicios temporales aislados, eliminados al concluir"
     }
   },
@@ -91,8 +108,8 @@
     "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
     "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
     "tests/test_m08_pagination.py": "b7f41e5ec0fd6f64d902d93fb1a63adc19ebf747a6482a6f8901cbaddf29b4f1",
-    "scripts/verify_m08.sh": "aa8b252d02c9844016598656a1c033e10ebd17d8c4c70b1f56234d30f494eff4",
+    "scripts/verify_m08.sh": "cd472c8049bd7f106a8c13260618a432ada04c28d8f22a77bff489efa021bfa3",
     "scripts/verify_all.sh": "dc35321d9253e2587456e0e0c5e607ea3d475bfcd536ab366d4abe85cb89e2d7",
-    "docs/ADR-008-pagination-index-performance.md": "f7aa91206763292d8f049fcd47c822dc2823b61504e887ee0d3c076820d77bc1"
+    "docs/ADR-008-pagination-index-performance.md": "dc7999d6a33936c6a50548de2ada000213dc2c64afb2a8f5327b8b859c071a2a"
   }
 }
