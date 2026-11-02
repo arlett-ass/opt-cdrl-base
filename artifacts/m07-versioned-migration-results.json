@@ -1,0 +1,29 @@
+{
+  "module": "M07",
+  "verification_status": "passed",
+  "versioning": {
+    "supportedVersions": [
+      1,
+      2
+    ],
+    "targetVersion": 2
+  },
+  "migration": {
+    "strategy": "explicit-v1-to-v2",
+    "idempotent": true
+  },
+  "compatibility": {
+    "consumerVersion": 1,
+    "backwardCompatible": true
+  },
+  "rollback": {
+    "strategy": "previousEvent-snapshot",
+    "verified": true
+  },
+  "tests": {
+    "total": 48,
+    "passed": 48,
+    "failed": 0,
+    "errors": 0
+  }
+}
