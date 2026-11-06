@@ -8,6 +8,7 @@ from uuid import uuid4
 from botocore.exceptions import ClientError
 import pytest
 
+from src.m05.event_contract import validate_event
 from src.m09.authorization import IdentityRegistry
 from src.m09.policy import AUDIT, EVENTS, ROLES, is_allowed
 from src.m09.secure_operations import (
@@ -67,7 +68,7 @@ class MemoryAudit:
 
 @pytest.fixture
 def context():
-    assignments = {subject: role for role, subject in CASES["identities"].items() for role in ["cdrl_" + role]}
+    assignments = {subject: "cdrl_" + role for role, subject in CASES["identities"].items()}
     registry = IdentityRegistry(assignments)
     identities = {
         role: registry.identity_for_verified_subject(subject)
@@ -100,7 +101,7 @@ def test_reader_can_read_event_and_audit_is_persisted(context):
 
 def test_writer_can_create_once_with_durable_audit(context):
     service, users, events, audit = _service(context, events=MemoryEvents())
-    assert service.create_event(users["cdrl_writer"], SAMPLE) == SAMPLE
+    assert service.create_event(users["cdrl_writer"], SAMPLE) == validate_event(SAMPLE)
     assert SAMPLE["eventId"] in events.items
     assert [entry["result"] for entry in audit.items.values()] == ["attempt", "success"]
 
