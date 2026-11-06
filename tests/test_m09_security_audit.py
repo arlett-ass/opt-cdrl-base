@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import json
 from uuid import uuid4
@@ -9,7 +10,10 @@ from uuid import uuid4
 from botocore.exceptions import ClientError
 import pytest
 
-from src.m06.audit_store import build_audit_record, record_audit, sanitize_audit_context
+from src.m06.audit_store import (
+    build_audit_record, record_audit, sanitize_audit_context, ensure_audit_table,
+)
+from src.m05.dynamodb_client import get_dynamodb_client, get_dynamodb_resource
 from src.m09.security_audit import (
     SecurityAuditRecordError, SecurityAuditSink, create_security_audit_sink,
     validate_security_audit_record,
@@ -174,3 +178,25 @@ def test_fixture_declares_expected_audit_contract():
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     assert set(fixture["expected_audit_fields"]) == set(_record())
     assert len(fixture["permission_cases"]) >= 4
+
+
+def test_security_audit_is_durable_and_append_only_in_dynamodb_local():
+    """Integración real aislada: el servicio escribe en tabla DynamoDB Local."""
+    if os.environ.get("DYNAMODB_LOCAL", "").strip().lower() != "true":
+        pytest.skip("Prueba de integración solo con DYNAMODB_LOCAL=true.")
+    client = get_dynamodb_client()
+    name = "cdrl_m09_audit_test_" + uuid4().hex[:16]
+    ensure_audit_table(client=client, table_name=name, attempts=100, poll_seconds=0.05)
+    table = get_dynamodb_resource().Table(name)
+    try:
+        sink = SecurityAuditSink(table=table)
+        record = _record()
+        assert sink(record) is True
+        assert table.get_item(Key={"auditId": record["auditId"]}, ConsistentRead=True)["Item"] == record
+        assert sink(dict(record, actorId="test-other")) is False
+        assert table.get_item(Key={"auditId": record["auditId"]}, ConsistentRead=True)["Item"] == record
+    finally:
+        client.delete_table(TableName=name)
+        client.get_waiter("table_not_exists").wait(
+            TableName=name, WaiterConfig={"Delay": 1, "MaxAttempts": 10},
+        )
