@@ -1,0 +1,86 @@
+{
+  "description": "Casos sintéticos M09 para auditoría y remediación; nunca habilitar la política vulnerable en el servicio real.",
+  "identities": {
+    "reader": "test-reader",
+    "writer": "test-writer",
+    "operator": "test-operator",
+    "migrator": "test-migrator"
+  },
+  "permission_cases": [
+    {
+      "role": "cdrl_reader",
+      "action": "GetItem",
+      "resource": "cdrl_events",
+      "expected": "allowed"
+    },
+    {
+      "role": "cdrl_writer",
+      "action": "PutItem",
+      "resource": "cdrl_events",
+      "expected": "allowed"
+    },
+    {
+      "role": "cdrl_operator",
+      "action": "ReadOperationalSummary",
+      "resource": "cdrl_events",
+      "expected": "allowed"
+    },
+    {
+      "role": "cdrl_reader",
+      "action": "PutItem",
+      "resource": "cdrl_events",
+      "expected": "denied"
+    },
+    {
+      "role": "cdrl_writer",
+      "action": "GetItem",
+      "resource": "cdrl_events",
+      "expected": "denied"
+    },
+    {
+      "role": "cdrl_operator",
+      "action": "GetItem",
+      "resource": "cdrl_events",
+      "expected": "denied"
+    },
+    {
+      "role": "cdrl_migrator",
+      "action": "DeleteItem",
+      "resource": "cdrl_events",
+      "expected": "denied"
+    },
+    {
+      "role": "cdrl_reader",
+      "action": "UpdateItem",
+      "resource": "cdrl_audit_log",
+      "expected": "denied"
+    }
+  ],
+  "isolated_abuse": {
+    "description": "Simular localmente una política con DeleteItem indebidamente habilitado para el lector; no modificar src/m09/policy.py.",
+    "actor": "test-reader",
+    "role": "cdrl_reader",
+    "action": "DeleteItem",
+    "resource": "cdrl_events",
+    "unsafe_policy_allows": true,
+    "fixed_policy_allows": false
+  },
+  "synthetic_secrets": {
+    "password": "synthetic-password-never-save",
+    "Authorization": "Bearer synthetic-token-never-save",
+    "nested": {
+      "api_key": "synthetic-api-key-never-save"
+    }
+  },
+  "expected_audit_fields": [
+    "auditId",
+    "attemptId",
+    "actorId",
+    "role",
+    "action",
+    "resource",
+    "result",
+    "reason",
+    "timestamp"
+  ]
+}
