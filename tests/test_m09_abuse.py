@@ -76,7 +76,7 @@ def context():
     registry = IdentityRegistry(assignments)
     identities = {
         role: registry.identity_for_verified_subject(subject)
-        for role, subject in assignments.items()
+        for subject, role in assignments.items()
     }
     return registry, identities
 
