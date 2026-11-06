@@ -3,12 +3,16 @@
 from copy import deepcopy
 from pathlib import Path
 import json
+import os
 from uuid import uuid4
 
 from botocore.exceptions import ClientError
 import pytest
 
 from src.m05.event_contract import validate_event
+from src.m05.dynamodb_client import get_dynamodb_client, get_dynamodb_resource
+from src.m05.table_setup import ensure_table
+from src.m06.audit_store import ensure_audit_table
 from src.m09.authorization import IdentityRegistry
 from src.m09.policy import AUDIT, EVENTS, ROLES, is_allowed
 from src.m09.secure_operations import (
@@ -227,3 +231,39 @@ def test_audit_record_contains_no_request_content_or_secret(context):
         service.write_audit(users["cdrl_reader"], {"password": secret})
     assert secret not in json.dumps(audit.items)
     assert set(next(iter(audit.items.values()))) == set(CASES["expected_audit_fields"])
+
+
+def test_end_to_end_authorization_and_durable_audit_in_dynamodb_local(context):
+    """Prueba integrada de las dos tablas reales sin modificar datos permanentes."""
+    if os.environ.get("DYNAMODB_LOCAL", "").strip().lower() != "true":
+        pytest.skip("Prueba de integración solo con DYNAMODB_LOCAL=true.")
+    client = get_dynamodb_client()
+    suffix = uuid4().hex[:16]
+    events_name = "cdrl_m09_events_" + suffix
+    audit_name = "cdrl_m09_audit_" + suffix
+    ensure_table(client=client, table_name=events_name, attempts=100, poll_seconds=0.05)
+    ensure_audit_table(client=client, table_name=audit_name, attempts=100, poll_seconds=0.05)
+    events = get_dynamodb_resource().Table(events_name)
+    audit = get_dynamodb_resource().Table(audit_name)
+    try:
+        service, users, _, _ = _service(context, events=events, audit=audit)
+        assert service.create_event(users["cdrl_writer"], SAMPLE) == validate_event(SAMPLE)
+        assert service.get_event(users["cdrl_reader"], SAMPLE["eventId"]) == validate_event(SAMPLE)
+        with pytest.raises(AccessDeniedError):
+            service.delete_event(users["cdrl_reader"], SAMPLE["eventId"])
+        assert events.get_item(Key={"eventId": SAMPLE["eventId"]}, ConsistentRead=True)["Item"] == validate_event(SAMPLE)
+        audit_records = audit.scan()["Items"]  # Solo identidad técnica de pruebas.
+        assert len(audit_records) == 5  # Escritura, lectura: intento+éxito; eliminación: denegación.
+        assert sorted(x["result"] for x in audit_records) == sorted(
+            ["attempt", "success", "attempt", "success", "denied"]
+        )
+        assert len({x["auditId"] for x in audit_records}) == 5
+        assert len({x["attemptId"] for x in audit_records}) == 3
+        assert all(set(x) == set(CASES["expected_audit_fields"]) for x in audit_records)
+        assert "password" not in json.dumps(audit_records).lower()
+    finally:
+        for name in (events_name, audit_name):
+            client.delete_table(TableName=name)
+            client.get_waiter("table_not_exists").wait(
+                TableName=name, WaiterConfig={"Delay": 1, "MaxAttempts": 10},
+            )
