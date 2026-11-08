@@ -2,20 +2,20 @@
   "assignmentId": "m09-nosql-security-audit",
   "module": "M09",
   "verification_status": "passed",
-  "verifiedAt": "2026-11-08T22:49:24.556296+00:00",
+  "verifiedAt": "2026-11-08T22:54:13.869389+00:00",
   "environment": {
     "python": "3.14.9",
     "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
     "boto3": "1.42.0",
     "dynamodbLocal": true,
-    "dynamodbPort": "8000",
+    "dynamodbPort": "18009",
     "region": "us-east-1",
     "authentication": "synthetic_server_controlled_identities",
     "authorization": "Python_application_layer",
     "awsIamVerified": false
   },
   "sourceState": {
-    "head": "6cd4e08d17d06d33fbac7546dfef5e39056e6033",
+    "head": "ddd718b2610fa69b72840f4015613295ff4f3a1a",
     "sourcesMatchHead": true,
     "sourceSha256": {
       "config/iam/m09-dynamodb-policy.json": "5990fa54756e07e0a31028512274ceed16b924c241fcae09d71f3fbdb41a3399",

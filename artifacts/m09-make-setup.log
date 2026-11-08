@@ -1,0 +1,86 @@
+=== make setup: primera ejecucion con volumenes nuevos ===
+== CDRL: preparación reproducible ==
+[1/4] Validando Docker Compose...
+[2/4] Levantando PostgreSQL y DynamoDB Local...
+ Network cdrl_m09_david_8a8218d5e509_default  Creating
+ Network cdrl_m09_david_8a8218d5e509_default  Created
+ Volume cdrl_m09_david_8a8218d5e509_dynamodb_data  Creating
+ Volume cdrl_m09_david_8a8218d5e509_dynamodb_data  Created
+ Volume cdrl_m09_david_8a8218d5e509_postgres_data  Creating
+ Volume cdrl_m09_david_8a8218d5e509_postgres_data  Created
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Creating
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Creating
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Created
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Created
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Creating
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Created
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Starting
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Starting
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Started
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Started
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Exited
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Starting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Started
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Exited
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Healthy
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Healthy
+[3/4] Estado de servicios...
+NAME                                     IMAGE                          COMMAND                  SERVICE    CREATED         STATUS                   PORTS
+cdrl_m09_david_8a8218d5e509-dynamodb-1   amazon/dynamodb-local:latest   "java -jar DynamoDBL…"   dynamodb   7 seconds ago   Up 4 seconds             0.0.0.0:18009->8000/tcp, [::]:18009->8000/tcp
+cdrl_m09_david_8a8218d5e509-postgres-1   postgres:16-alpine             "docker-entrypoint.s…"   postgres   9 seconds ago   Up 5 seconds (healthy)   0.0.0.0:55439->5432/tcp, [::]:55439->5432/tcp
+[4/4] Aplicando migraciones y seed...
+Preparando base de datos...
+Aplicando migración: 001_schema.sql
+Migración aplicada correctamente: 001_schema.sql
+Aplicando migración: 002_relational_model.sql
+Migración aplicada correctamente: 002_relational_model.sql
+Aplicando migración: 003_security_roles.sql
+Migración aplicada correctamente: 003_security_roles.sql
+Ejecutando seed...
+Sembrando ubicaciones (locations)...
+Sembrando dispositivos (devices)...
+Sembrando lecturas (telemetry_readings)...
+¡Seed completado!
+Base preparada correctamente.
+
+Setup CDRL completado correctamente.
+El entorno quedó preparado para ejecutar: make verify
+
+=== make setup: segunda ejecucion, idempotencia ===
+== CDRL: preparación reproducible ==
+[1/4] Validando Docker Compose...
+[2/4] Levantando PostgreSQL y DynamoDB Local...
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Running
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Running
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Starting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Started
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Exited
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Waiting
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Exited
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Healthy
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Healthy
+[3/4] Estado de servicios...
+NAME                                     IMAGE                          COMMAND                  SERVICE    CREATED          STATUS                   PORTS
+cdrl_m09_david_8a8218d5e509-dynamodb-1   amazon/dynamodb-local:latest   "java -jar DynamoDBL…"   dynamodb   8 seconds ago    Up 6 seconds             0.0.0.0:18009->8000/tcp, [::]:18009->8000/tcp
+cdrl_m09_david_8a8218d5e509-postgres-1   postgres:16-alpine             "docker-entrypoint.s…"   postgres   10 seconds ago   Up 6 seconds (healthy)   0.0.0.0:55439->5432/tcp, [::]:55439->5432/tcp
+[4/4] Aplicando migraciones y seed...
+Preparando base de datos...
+Migración ya aplicada: 001_schema.sql
+Migración ya aplicada: 002_relational_model.sql
+Migración ya aplicada: 003_security_roles.sql
+Ejecutando seed...
+Sembrando ubicaciones (locations)...
+Sembrando dispositivos (devices)...
+Sembrando lecturas (telemetry_readings)...
+¡Seed completado!
+Base preparada correctamente.
+
+Setup CDRL completado correctamente.
+El entorno quedó preparado para ejecutar: make verify

@@ -1,0 +1,20 @@
+=== make run: proceso en primer plano ===
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Running
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Running
+Attaching to dynamodb-1, dynamodb-init-1, postgres-1
+[Kdynamodb-init-1 exited with code 0
+Gracefully Stopping... press Ctrl+C again to force
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Stopping
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Stopping
+ Container cdrl_m09_david_8a8218d5e509-postgres-1  Stopped
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-1  Stopped
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Stopping
+ Container cdrl_m09_david_8a8218d5e509-dynamodb-init-1  Stopped
+
+make: *** [Makefile:15: run] Error 130
+
+=== Comprobaciones funcionales mientras make run estaba activo ===
+PostgreSQL: tres migraciones y 50 lecturas sintéticas verificadas.
+DynamoDB: creación/lectura permitidas, eliminación denegada, documento intacto y cinco registros de auditoría persistidos.
+
+Cierre solicitado con SIGINT despues de completar las comprobaciones.
