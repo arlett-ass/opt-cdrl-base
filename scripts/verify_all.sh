@@ -99,4 +99,8 @@ echo "== M08 / paginación, índices y rendimiento =="
 bash scripts/verify_m08.sh
 
 echo
-echo "Verificación integrada M01-M08 completada correctamente."
+echo "== M09 / seguridad NoSQL y auditoría =="
+bash scripts/verify_m09.sh
+
+echo
+echo "Verificación integrada M01-M09 completada correctamente."
