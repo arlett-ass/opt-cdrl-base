@@ -1,0 +1,1498 @@
+{
+  "assignmentId": "m09-nosql-security-audit",
+  "module": "M09",
+  "verification_status": "passed",
+  "verifiedAt": "2026-11-09T00:30:25.092827+00:00",
+  "environment": {
+    "python": "3.14.4",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "boto3": "1.42.0",
+    "dynamodbLocal": true,
+    "dynamodbPort": "8000",
+    "region": "us-east-1",
+    "authentication": "synthetic_server_controlled_identities",
+    "authorization": "Python_application_layer",
+    "awsIamVerified": false
+  },
+  "sourceState": {
+    "head": "249775da620f6c6efc110708d14959cb3fc504ee",
+    "sourcesMatchHead": true,
+    "sourceSha256": {
+      "config/iam/m09-dynamodb-policy.json": "613aa6e553826f57388dd24c530890cbf4f8cc45e40ef14deb1d670a0e86bb59",
+      "requirements.txt": "51039e7aaeaf07f78e360ba7b5da8830bdb44b0209f1a096504485b7971f0658",
+      "scripts/load_env.sh": "1389fd4423a49ab7097497ad1bfa982ba23d1ced006149a457feb3e16af4730f",
+      "scripts/verify_all.sh": "8c7fd7fb4e5c0eb40b6d4979cad8ee04538fc3b2170a66667b7f5c5f9d0d175e",
+      "scripts/verify_m09.sh": "10672dd69f11fde32a14620a7326a2a10049d27b19783534e212d954e34eba06",
+      "src/m05/__init__.py": "e5e0d118a411b095377fe0fb63f85c6a7a41ef6160ec43da813fa30ca73baa91",
+      "src/m05/document_store.py": "feca04cb7c1b50005ed9bd85af6ac69264d327b28501480a38d34e020e0be561",
+      "src/m05/dynamodb_client.py": "7508684695c14bd6ef3fbfbc34186ba0105817f0edc862af5f256cbdae980fe2",
+      "src/m05/event_contract.py": "06edc0344032a08ddff0d88cc7134d4097d63b26bf193bd624fc3d40320c06cf",
+      "src/m05/table_setup.py": "cdc52c2fc9c80f74a7e760a9c85183e70f70f8a159cde249fea356b37b3b59e8",
+      "src/m06/__init__.py": "a4d65dfc19dc3cc9f705d6d2506a22c0dbbb923dc1a1eb840d41e02e473e72f4",
+      "src/m06/audit_store.py": "d003a91b1807dc51ace9a774f3752ec86d0bf280e2d9dd49237379fb0a1c4d64",
+      "src/m06/audited_operations.py": "3e21ebf1c467c679ec87c22de7735e3eb6c6be9f2131e75afb087856a701ec3c",
+      "src/m06/recovery.py": "b698495de246c346c1c0d826c5e343c5ce8e45c4ecefc3f0fd2285c876c1d71b",
+      "src/m06/schema_evolution.py": "a3670f3104e9a246172c6626d5fdcedd1a3fb3f2a2fb5ab632d996a5cc37b4da",
+      "src/m06/versioned_store.py": "bbabc430d54a99d232f2ee03abc504b9f736b22b4971d8220a67513b7e49b3ec",
+      "src/m07/__init__.py": "6a89bb819864df2f6437877b422a19748cdf8172e1379ab3bb8b6b156e2b7a7f",
+      "src/m07/compatibility.py": "49490a3e53963e69aecf061b75ff12c6a5e2ee03bd1de7f4bd09f9b0e5739e66",
+      "src/m07/migration.py": "37536bb262324f1fe85085e72873cb39aa9d8ea5d574cc80aa2ff1d12b8e28a8",
+      "src/m07/rollback.py": "4a0a2ce8d7e93911cbcdee0617db578623074f5b661a6a4e0ad0bf868fd8b16c",
+      "src/m07/versioning.py": "c9d016e54152d46f669aefede86e8e6389e5d84bd559e39a8a39e3ecbd510ec0",
+      "src/m08/__init__.py": "c170920ee90d74af13acb926f9461c5a84fdc8203e865aa9f0e1fe7d91239332",
+      "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
+      "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
+      "src/m09/__init__.py": "ef665059b0be79e0b78d57dbe42508fb957aa21d620fc99618d63bbc37a5a4b8",
+      "src/m09/authorization.py": "0b178050ba63e634d08046417e4d411d0a18c8748b02df6f23f7df997266b22e",
+      "src/m09/policy.py": "8116c2e2fa42e9a8b6e598e1a5f9b13774b44e6573172ac696cd01a6222610b5",
+      "src/m09/secure_operations.py": "317735c1e359a3e2f18569cd33028b27fbe067952f66db9438dcae790426c1a8",
+      "src/m09/security_audit.py": "7ab1d577f1be36a019a7790fdf477dd775dba9f2c66a21521dd93ea2f8bddb49",
+      "tests/fixtures/m05_events.json": "7656edff6e38dcc6ec349822491ae27c4175e8ed2fd3f95fc3f9d708ca91c3aa",
+      "tests/fixtures/m06_audit_cases.json": "81915475b78360e1ec24b81e0654e0d9dc327b9dc2722398b93c40c91c2d56d1",
+      "tests/fixtures/m06_recovery_fixture.json": "d2aad045e4a61d576cbc7d8447d7855734dd1dd8fb326975681f2b872fdf2a72",
+      "tests/fixtures/m06_versioned_events.json": "d4f9dd1d6a84c2a58cfadcd949c45292323b5137eb7629237c675ecda1433880",
+      "tests/fixtures/m07_consumer_cases.json": "c44b1e4766924399b9d75d9129393dbad45e19cd0ba536170ef3605048291cd6",
+      "tests/fixtures/m07_rollback_cases.json": "d79f84d1ca93f6a6e907f3f51f7313c36fac2d7a2b3c3f96e4dbf31be8b1c5a9",
+      "tests/fixtures/m07_versioned_documents.json": "ae8db449404029c2ce0507525684a106e220a114e88b1f7a19fb0fa8972a2e90",
+      "tests/fixtures/m09_security_cases.json": "cc96420ae89f0429fa3de658e05c555ee84093cf35820743c1469ca98b56f684",
+      "tests/test_m09_abuse.py": "353510958fe250f51952b714168dca6cbb543c1681230045224b1a6ea298ae2d",
+      "tests/test_m09_authorization.py": "f9c1304794adecac59e578d036579431067bbe4dd88f5abb0ae40d5ec4f2e146",
+      "tests/test_m09_integration.py": "c02d35c0d6f31d87d02b685978d2797276470aa300e26bb46f8c6d69d06b0bad",
+      "tests/test_m09_security_audit.py": "d36bcf68642dc739e216e86c6b69757169c9ddd3abe2e0cd3a314103ba5b099c"
+    }
+  },
+  "tests": {
+    "total": 193,
+    "passed": 193,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": {
+      "tests/test_m09_authorization.py": 96,
+      "tests/test_m09_security_audit.py": 29,
+      "tests/test_m09_abuse.py": 39,
+      "tests/test_m09_integration.py": 29
+    },
+    "cases": [
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[admin-GetItem-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-Scan-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-GetItem-unrelated_table]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[CDRL_READER-GetItem-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-getitem-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[None-GetItem-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[role6-GetItem-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-action7-cdrl_events]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-GetItem-resource8]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_only_context_issued_by_the_configured_registry_is_trusted",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[None]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[identity2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_denial_precedes_argument_validation_and_default_table_resolution",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_writer_creates_once_reader_preserves_version_and_denials_preserve_data[1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_writer_creates_once_reader_preserves_version_and_denials_preserve_data[2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_event_returns_none_with_audited_success",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_operator_gets_only_projected_operational_fields",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[None]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[unsafe_type1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[unsafe.type]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_authorized_invalid_input_is_audited_without_writing_or_querying",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_unknown_action_and_resource_are_normalized_before_audit_integration",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_m05_indexed_queries_and_native_m08_cursor_are_preserved",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_audit_acknowledgement_surrounds_backend_and_uses_distinct_records",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_audit_dependency_is_required[None]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_audit_dependency_is_required[False]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_audit_dependency_is_required[discard]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[False]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[None]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[saved]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[acknowledgement4]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_failed_denial_audit_still_denies_without_database_access",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_post_write_audit_failure_reports_possible_write_without_faking_rollback",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_post_read_audit_failure_does_not_return_an_unaudited_document",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_backend_error_is_audited_without_copying_exception_secrets",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_real_writer_reader_duplicate_and_denied_delete[1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_real_writer_reader_duplicate_and_denied_delete[2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_real_mixed_versions_use_native_cursor_and_keep_operational_summary_safe",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_authorization.py::test_real_failed_pre_write_audit_leaves_event_absent",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_security_audit_sink_writes_conditional_record_without_mutating_input",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_duplicate_audit_id_never_overwrites_existing_security_log",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra4]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[auditId-not-a-uuid]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[attemptId-None]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[role-administrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[action-DropTable]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[resource-private-tokens]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[result-passed]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[reason-some arbitrary client text]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06T12:00:00]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06 12:00:00Z]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06T12:00:00+02:00]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[actorId-Bearer synthetic-token]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[actorId-Basic synthetic-credentials]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[attempt-authorized_attempt]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[success-operation_completed]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[error-operation_failed]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[denied-untrusted_identity]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_each_emission_can_keep_attempt_id_but_has_distinct_audit_id",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_sensitive_keys_are_sanitized_recursively_by_existing_m06_utility",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_m06_migration_audit_and_m09_security_audit_coexist_without_schema_changes",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_fixture_declares_expected_audit_contract",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_security_audit_is_durable_and_append_only_in_dynamodb_local",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_security_audit.py::test_dynamodb_error_is_not_reported_as_success",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case4]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case5]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case6]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case7]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_reader_can_read_event_and_audit_is_persisted",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_writer_can_create_once_with_durable_audit",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-read_audit-params0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-write_audit-params1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-update_audit-params2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-delete_audit-params3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-read_audit-params0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-write_audit-params1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-update_audit-params2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-delete_audit-params3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-read_audit-params0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-write_audit-params1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-update_audit-params2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-delete_audit-params3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-read_audit-params0]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-write_audit-params1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-update_audit-params2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-delete_audit-params3]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_unknown_actor_is_denied_without_event_io",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_reader_cannot_create_and_writer_cannot_read",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_operator_receives_only_whitelisted_operational_fields",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_audit_write_failure_prevents_event_creation",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_late_audit_failure_does_not_claim_rollback",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_consecutive_denials_have_distinct_audit_and_attempt_ids",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_audit_record_contains_no_request_content_or_secret",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_abuse.py::test_end_to_end_authorization_and_durable_audit_in_dynamodb_local",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-PutItem]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-UpdateItem]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_writer-GetItem]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_operator-GetItem]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_migrator-Query]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[unknown]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[role-string]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[client-dict]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[foreign-registry]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_operator_only_receives_safe_summary_with_durable_audit",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v1]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v2]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_missing_event_is_audited_without_inventing_a_document",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_mixed_versions_paginate_without_omissions_and_audit_each_page",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_invalid_cursor_persists_error_before_query",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_recursive_sanitization_and_m06_m09_logs_coexist",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[authorized-create]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[denied-delete]",
+        "outcome": "passed"
+      },
+      {
+        "nodeid": "tests/test_m09_integration.py::test_audit_failure_after_write_reports_uncertainty_without_fake_rollback",
+        "outcome": "passed"
+      }
+    ]
+  },
+  "authorization": {
+    "scope": "application_policy_tests",
+    "matrix": [
+      {
+        "role": "cdrl_reader",
+        "action": "GetItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "allowed",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "GetItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "Query",
+        "resource": "cdrl_events",
+        "expectedDecision": "allowed",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "Query",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "PutItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "PutItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "UpdateItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "UpdateItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "DeleteItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "DeleteItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_reader",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_reader]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "GetItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "GetItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "Query",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "Query",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "PutItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "allowed",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "PutItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "UpdateItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "UpdateItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "DeleteItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "DeleteItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_writer",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_writer]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "GetItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "GetItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "Query",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "Query",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "PutItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "PutItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "UpdateItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "UpdateItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "DeleteItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "DeleteItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_events",
+        "expectedDecision": "allowed",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_operator",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_operator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "GetItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "GetItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "Query",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "Query",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "PutItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "PutItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "UpdateItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "UpdateItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "DeleteItem",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "DeleteItem",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_events",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_migrator]"
+      },
+      {
+        "role": "cdrl_migrator",
+        "action": "ReadOperationalSummary",
+        "resource": "cdrl_audit_log",
+        "expectedDecision": "denied",
+        "status": "passed",
+        "test": "tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_migrator]"
+      }
+    ]
+  },
+  "scenarios": {
+    "normal": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v1]",
+        "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v2]"
+      ]
+    },
+    "boundary1": {
+      "status": "passed",
+      "testExecutions": 5,
+      "tests": [
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-PutItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-UpdateItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_writer-GetItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_operator-GetItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_migrator-Query]"
+      ]
+    },
+    "boundary2": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator]"
+      ]
+    },
+    "declaredFailure": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_reader]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_writer]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_operator]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_migrator]"
+      ]
+    },
+    "trustedIdentity": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[unknown]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[role-string]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[client-dict]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[foreign-registry]"
+      ]
+    },
+    "operationalSummary": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_operator_only_receives_safe_summary_with_durable_audit"
+      ]
+    },
+    "durableAudit": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_security_audit.py::test_security_audit_is_durable_and_append_only_in_dynamodb_local",
+        "tests/test_m09_abuse.py::test_end_to_end_authorization_and_durable_audit_in_dynamodb_local"
+      ]
+    },
+    "sanitization": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_abuse.py::test_audit_record_contains_no_request_content_or_secret",
+        "tests/test_m09_integration.py::test_recursive_sanitization_and_m06_m09_logs_coexist"
+      ]
+    },
+    "distinctAuditIds": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_abuse.py::test_consecutive_denials_have_distinct_audit_and_attempt_ids"
+      ]
+    },
+    "abuseRemediation": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations"
+      ]
+    },
+    "auditFailureBeforeOperation": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[authorized-create]",
+        "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[denied-delete]"
+      ]
+    },
+    "auditFailureAfterWrite": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_audit_failure_after_write_reports_uncertainty_without_fake_rollback"
+      ]
+    },
+    "mixedVersionsAndPagination": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_mixed_versions_paginate_without_omissions_and_audit_each_page"
+      ]
+    },
+    "duplicateWrite": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v1]",
+        "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v2]"
+      ]
+    },
+    "missingEvent": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_missing_event_is_audited_without_inventing_a_document"
+      ]
+    },
+    "invalidCursor": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_invalid_cursor_persists_error_before_query"
+      ]
+    }
+  },
+  "audit": {
+    "requiredFields": [
+      "action",
+      "actorId",
+      "attemptId",
+      "auditId",
+      "reason",
+      "resource",
+      "result",
+      "role",
+      "timestamp"
+    ],
+    "persistence": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_security_audit.py::test_security_audit_is_durable_and_append_only_in_dynamodb_local",
+        "tests/test_m09_abuse.py::test_end_to_end_authorization_and_durable_audit_in_dynamodb_local"
+      ]
+    },
+    "sanitization": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_abuse.py::test_audit_record_contains_no_request_content_or_secret",
+        "tests/test_m09_integration.py::test_recursive_sanitization_and_m06_m09_logs_coexist"
+      ]
+    },
+    "distinctIdentifiers": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_abuse.py::test_consecutive_denials_have_distinct_audit_and_attempt_ids"
+      ]
+    },
+    "userAccessDenied": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator]"
+      ]
+    }
+  },
+  "denials": {
+    "boundary1": {
+      "status": "passed",
+      "testExecutions": 5,
+      "tests": [
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-PutItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-UpdateItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_writer-GetItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_operator-GetItem]",
+        "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_migrator-Query]"
+      ]
+    },
+    "boundary2": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator]",
+        "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator]"
+      ]
+    },
+    "declaredFailure": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_reader]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_writer]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_operator]",
+        "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_migrator]"
+      ]
+    },
+    "trustedIdentity": {
+      "status": "passed",
+      "testExecutions": 4,
+      "tests": [
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[unknown]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[role-string]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[client-dict]",
+        "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[foreign-registry]"
+      ]
+    }
+  },
+  "abuseRemediation": {
+    "status": "passed",
+    "testExecutions": 1,
+    "tests": [
+      "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations"
+    ],
+    "scope": "isolated_in_memory_fixture",
+    "before": "excessive_DeleteItem_permission_deletes_synthetic_event",
+    "after": "secured_operation_denies_DeleteItem_and_preserves_event",
+    "awsPermissionsChanged": false
+  },
+  "auditFailures": {
+    "beforeOperation": {
+      "status": "passed",
+      "testExecutions": 2,
+      "tests": [
+        "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[authorized-create]",
+        "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[denied-delete]"
+      ]
+    },
+    "afterWrite": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_integration.py::test_audit_failure_after_write_reports_uncertainty_without_fake_rollback"
+      ]
+    },
+    "method": "controlled_failure_injection",
+    "atomicityClaimed": false
+  },
+  "limitations": [
+    "DynamoDB Local no aplica IAM; el JSON IAM es una propuesta sin validación AWS.",
+    "Los escenarios pueden compartir pruebas; sus conteos no son aditivos ni cuentan registros de auditoría.",
+    "La escritura del evento y la auditoría son independientes; un fallo posterior puede dejar el evento persistido.",
+    "La remediación usa un fixture en memoria; la integración persistente usa tablas locales temporales.",
+    "Este artifact cubre M09; el resultado global M01–M09 se obtiene de make verify."
+  ]
+}

@@ -1,0 +1,588 @@
+Python integrado: .venv/bin/python
+PostgreSQL usuario: cdrl_dev
+PostgreSQL puerto: 5432
+
+== CDRL: verificación integrada ==
+
+== Base del repositorio ==
+CDRL starter base verification passed
+
+== M01 / contrato de datos ==
+Python M01: .venv/bin/python
+== M01: contrato de datos y pruebas ==
+[1/4] Verificando archivos requeridos...
+OK: archivos M01 presentes.
+[2/4] Ejecutando las cuatro pruebas M01...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 4 items
+
+tests/test_telemetry_contract.py::test_normal_reading_is_accepted PASSED [ 25%]
+tests/test_telemetry_contract.py::test_lower_temperature_boundary_is_accepted PASSED [ 50%]
+tests/test_telemetry_contract.py::test_upper_co2_boundary_is_accepted PASSED [ 75%]
+tests/test_telemetry_contract.py::test_humidity_above_maximum_is_rejected PASSED [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: artifacts/m01-tests.json
+============================== 4 passed in 0.58s ===============================
+[3/4] Validando artifact machine-readable...
+OK: artifact M01 válido: 4 pruebas ejecutadas y 4 aprobadas.
+[4/4] Verificando escenarios obligatorios...
+OK: caso normal + 2 límites + 1 fallo declarado verificados.
+
+M01 verificado correctamente.
+Artifact: artifacts/m01-tests.json
+
+== M02 / modelo relacional ==
+== M02: modelo relacional, invariantes y consultas ==
+[1/5] Verificando archivos requeridos...
+OK: archivos M02 presentes.
+[2/5] Ejecutando 8 pruebas de invariantes y 4 de aceptación...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 12 items
+
+tests/test_m02_invariants_david.py::test_duplicate_reading_is_rejected PASSED [  8%]
+tests/test_m02_invariants_david.py::test_nonexistent_device_is_rejected PASSED [ 16%]
+tests/test_m02_invariants_david.py::test_required_device_is_rejected_when_null PASSED [ 25%]
+tests/test_m02_invariants_david.py::test_received_before_recorded_is_rejected PASSED [ 33%]
+tests/test_m02_invariants_david.py::test_device_with_readings_cannot_be_deleted PASSED [ 41%]
+tests/test_m02_invariants_david.py::test_location_with_devices_cannot_be_deleted PASSED [ 50%]
+tests/test_m02_invariants_david.py::test_context_view_returns_related_reading PASSED [ 58%]
+tests/test_m02_invariants_david.py::test_context_view_without_readings_is_empty PASSED [ 66%]
+tests/test_m02_acceptance_angelica.py::test_m02_normal PASSED            [ 75%]
+tests/test_m02_acceptance_angelica.py::test_m02_empty PASSED             [ 83%]
+tests/test_m02_acceptance_angelica.py::test_m02_boundaries PASSED        [ 91%]
+tests/test_m02_acceptance_angelica.py::test_m02_declared_failure PASSED  [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: artifacts/m02-relational-results.json
+============================== 12 passed in 0.75s ==============================
+[3/5] Validando las 12 pruebas M02...
+OK: M02 terminó 12/12.
+ - 8 invariantes
+ - 4 escenarios de aceptación
+[4/5] Ejecutando demostración de consultas parametrizadas...
+[5/5] Validando artifact de consultas...
+OK: las 5 consultas parametrizadas fueron ejecutadas y el caso vacío fue validado.
+
+M02 verificado correctamente.
+Artifact de pruebas: artifacts/m02-relational-results.json
+Artifact de invariantes: artifacts/m02-david-invariants.json
+Artifact de consultas: artifacts/m02-query-demo.json
+
+== M03 / seguridad relacional ==
+== M03: seguridad relacional y minimo privilegio ==
+[1/6] Verificando archivos requeridos...
+OK: archivos M03 presentes.
+[2/6] Verificando que .env no este rastreado...
+OK: .env no esta rastreado.
+[3/6] Revisando secretos en archivos rastreados...
+OK: no se detectaron patrones de secretos.
+[4/6] Ejecutando pruebas M03...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 4 items
+
+tests/test_m03_security.py::test_reader_can_query_context_view PASSED    [ 25%]
+tests/test_m03_security.py::test_writer_can_insert_telemetry_reading PASSED [ 50%]
+tests/test_m03_security.py::test_operator_can_update_device_status PASSED [ 75%]
+tests/test_m03_security.py::test_reader_insert_is_rejected_by_authorization PASSED [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: artifacts/m03-security-results.json
+============================== 4 passed in 0.44s ===============================
+[5/6] Validando artifact machine-readable...
+OK: artifact M03 valido: 4 pruebas ejecutadas y 4 aprobadas.
+[6/6] Verificando fallo declarado de autorizacion...
+OK: fallo declarado valida InsufficientPrivilege / SQLSTATE 42501.
+
+M03 verificado correctamente.
+Artifact: artifacts/m03-security-results.json
+
+== M04 / selección NoSQL ==
+== M04: seleccion de almacenamiento NoSQL ==
+[1/5] Verificando archivos requeridos...
+OK: archivos M04 presentes.
+[2/5] Validando matriz reproducible...
+OK: matriz estructuralmente valida y completa.
+Alternativas evaluadas: 4
+Estado de decision: complete
+Ganador(es): document
+ - Document / MongoDB: 3.95
+ - Graph / Neo4j: 2.90
+ - Column/Wide-column / Apache Cassandra: 3.80
+ - Object / Amazon S3: 2.90
+[3/5] Ejecutando pruebas M04...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 4 items
+
+tests/test_m04_storage_selection.py::test_real_matrix_is_valid_and_produces_decision PASSED [ 25%]
+tests/test_m04_storage_selection.py::test_score_boundaries_one_and_five_are_valid PASSED [ 50%]
+tests/test_m04_storage_selection.py::test_tie_is_preserved_without_invented_tiebreak PASSED [ 75%]
+tests/test_m04_storage_selection.py::test_invalid_weights_are_rejected PASSED [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: artifacts/.m04-pytest-report.json
+============================== 4 passed in 0.26s ===============================
+[4/5] Generando y validando artifact machine-readable...
+OK: artifact M04 valido: 4 pruebas ejecutadas y 4 aprobadas.
+Estado de decision: complete
+Ganador: document
+[5/5] Verificando fallo declarado...
+OK: fallo declarado rechaza pesos que no suman 100.
+
+M04 verificado correctamente.
+Artifact: artifacts/m04-storage-selection-results.json
+
+== M05 / almacenamiento documental ==
+Python M05: .venv/bin/python
+== M05: almacen documental, validacion e indices ==
+[1/8] Verificando archivos requeridos...
+OK: archivos M05 presentes.
+[2/8] Verificando dependencias Python...
+OK: boto3, pytest, fixtures y evidence disponibles.
+[3/8] Verificando conexion con DynamoDB...
+OK: DynamoDB responde correctamente.
+[4/8] Preparando tabla e indices...
+{"table": "cdrl_events", "status": "ACTIVE", "indexes": ["source-timestamp-index", "type-timestamp-index"]}
+OK: table_setup puede ejecutarse repetidamente.
+[5/8] Validando estructura de tabla e indices...
+OK: tabla e indices correctos: cdrl_events ['source-timestamp-index', 'type-timestamp-index']
+[6/8] Validando patrones de acceso...
+OK: consultas principales usan GetItem/Query y los indices declarados.
+[7/8] Ejecutando pruebas M05...
+....                                                                     [100%]
+4 passed in 40.23s
+[8/8] Validando escenarios y generando artifact...
+OK: artifact generado: artifacts/m05-document-store-results.json
+OK: artifact M05 valido.
+
+== M05 completado ==
+Tabla: cdrl_events
+Indices:
+  - type-timestamp-index
+  - source-timestamp-index
+Tests: 4/4 PASSED
+Artifact: artifacts/m05-document-store-results.json
+
+[M05] Verificacion completada correctamente.
+
+== M06 / evolución, auditoría y recuperación ==
+Python M06: .venv/bin/python
+== M06: evolucion, auditoria y recuperacion ==
+[1/8] Verificando archivos requeridos...
+OK: archivos M06 presentes.
+[2/8] Validando dependencias y fixtures...
+OK: dependencias y fixtures M06 válidos.
+[3/8] Verificando conexión con DynamoDB...
+OK: DynamoDB responde correctamente.
+[4/8] Preparando tablas de eventos y auditoría...
+OK: tablas ACTIVE e idempotentes: cdrl_events cdrl_audit_log
+[5/8] Ejecutando pruebas M06...
+.....                                                                    [100%]
+5 passed in 40.75s
+[6/8] Ejecutando demostración integrada y generando artifact...
+OK: demostración real M06 completada.
+OK: artifact generado: artifacts/m06-evolution-audit-recovery-results.json
+[7/8] Validando artifact M06...
+OK: artifact M06 válido.
+[8/8] Limpiando reporte temporal...
+
+== M06 completado ==
+Versiones soportadas: 1 y 2
+Auditoría: segura e idempotente
+Recovery: 1 restaurado / 3 verificados
+Tests: 5/5 PASSED
+Artifact: artifacts/m06-evolution-audit-recovery-results.json
+
+[M06] Verificación completada correctamente.
+
+== M07 / versionado, migración, compatibilidad y rollback ==
+== M07 / versionado, migración, compatibilidad y rollback ==
+Python M07: .venv/bin/python
+[1/5] Validando archivos M07...
+OK: archivos M07 presentes.
+[2/5] Ejecutando pruebas M07...
+................................................                         [100%]
+48 passed in 3.88s
+[3/5] Generando artifact M07...
+Artifact creado: artifacts/m07-versioned-migration-results.json
+[4/5] Validando artifact...
+OK: artifact M07 válido.
+[5/5] Limpieza
+
+== M07 completado correctamente ==
+Artifact: artifacts/m07-versioned-migration-results.json
+
+== M08 / paginación, índices y rendimiento ==
+Python M08: .venv/bin/python
+[1/6] Verificando archivos requeridos...
+OK: archivos M08 presentes.
+[2/6] Ejecutando pruebas M08 (contrato y DynamoDB Local)...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 71 items
+
+tests/test_m08_pagination.py::test_first_page_uses_one_query_and_keeps_native_item_order PASSED [  1%]
+tests/test_m08_pagination.py::test_json_cursor_continues_with_exact_native_key_and_normalized_filters PASSED [  2%]
+tests/test_m08_pagination.py::test_native_cursor_timestamp_is_validated_without_rewriting_its_raw_form PASSED [  4%]
+tests/test_m08_pagination.py::test_short_or_empty_page_with_native_key_still_has_continuation[items0] PASSED [  5%]
+tests/test_m08_pagination.py::test_short_or_empty_page_with_native_key_still_has_continuation[items1] PASSED [  7%]
+tests/test_m08_pagination.py::test_absent_or_empty_native_key_ends_the_traversal[ending0] PASSED [  8%]
+tests/test_m08_pagination.py::test_absent_or_empty_native_key_ends_the_traversal[ending1] PASSED [  9%]
+tests/test_m08_pagination.py::test_inclusive_page_size_boundaries_are_forwarded[1] PASSED [ 11%]
+tests/test_m08_pagination.py::test_inclusive_page_size_boundaries_are_forwarded[20] PASSED [ 12%]
+tests/test_m08_pagination.py::test_inclusive_page_size_boundaries_are_forwarded[1000] PASSED [ 14%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[0] PASSED [ 15%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[-1] PASSED [ 16%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[1001] PASSED [ 18%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[True] PASSED [ 19%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[False] PASSED [ 21%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[None] PASSED [ 22%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[1.0] PASSED [ 23%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[page_size7] PASSED [ 25%]
+tests/test_m08_pagination.py::test_invalid_page_size_is_rejected_before_query[20] PASSED [ 26%]
+tests/test_m08_pagination.py::test_invalid_event_type_is_rejected_before_query[None] PASSED [ 28%]
+tests/test_m08_pagination.py::test_invalid_event_type_is_rejected_before_query[] PASSED [ 29%]
+tests/test_m08_pagination.py::test_invalid_event_type_is_rejected_before_query[   ] PASSED [ 30%]
+tests/test_m08_pagination.py::test_invalid_event_type_is_rejected_before_query[1] PASSED [ 32%]
+tests/test_m08_pagination.py::test_invalid_event_type_is_rejected_before_query[True] PASSED [ 33%]
+tests/test_m08_pagination.py::test_invalid_temporal_range_is_rejected_before_query[2026-10-29T10:10:00.000000Z-2026-10-29T10:00:00.000000Z] PASSED [ 35%]
+tests/test_m08_pagination.py::test_invalid_temporal_range_is_rejected_before_query[2026-10-29T10:00:00-2026-10-29T10:10:00.000000Z] PASSED [ 36%]
+tests/test_m08_pagination.py::test_invalid_temporal_range_is_rejected_before_query[invalid-2026-10-29T10:10:00.000000Z] PASSED [ 38%]
+tests/test_m08_pagination.py::test_invalid_temporal_range_is_rejected_before_query[2026-10-29T10:00:00.000000Z-None] PASSED [ 39%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[empty] PASSED [ 40%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[list] PASSED [ 42%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[string] PASSED [ 43%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[number] PASSED [ 45%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[bool] PASSED [ 46%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[bool_version] PASSED [ 47%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[string_version] PASSED [ 49%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[unknown_version] PASSED [ 50%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[missing_version] PASSED [ 52%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[extra_envelope_field] PASSED [ 53%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[invalid_query] PASSED [ 54%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[different_event_type] PASSED [ 56%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[different_start] PASSED [ 57%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[different_end] PASSED [ 59%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[extra_query_field] PASSED [ 60%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[null_key] PASSED [ 61%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[missing_key_eventId] PASSED [ 63%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[empty_key_eventId] PASSED [ 64%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[non_string_key_eventId] PASSED [ 66%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[missing_key_type] PASSED [ 67%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[empty_key_type] PASSED [ 69%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[non_string_key_type] PASSED [ 70%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[missing_key_timestamp] PASSED [ 71%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[empty_key_timestamp] PASSED [ 73%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[non_string_key_timestamp] PASSED [ 74%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[extra_native_key_field] PASSED [ 76%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[different_key_partition] PASSED [ 77%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[key_before_range] PASSED [ 78%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[key_after_range] PASSED [ 80%]
+tests/test_m08_pagination.py::test_invalid_cursor_is_a_controlled_error_before_query[malformed_key_timestamp_inside_lexical_range] PASSED [ 81%]
+tests/test_m08_pagination.py::test_service_errors_are_propagated_without_becoming_empty_results[AccessDeniedException] PASSED [ 83%]
+tests/test_m08_pagination.py::test_service_errors_are_propagated_without_becoming_empty_results[ResourceNotFoundException] PASSED [ 84%]
+tests/test_m08_pagination.py::test_service_errors_are_propagated_without_becoming_empty_results[ValidationException] PASSED [ 85%]
+tests/test_m08_pagination.py::test_default_table_factory_is_used_when_no_table_is_injected PASSED [ 87%]
+tests/test_m08_pagination.py::test_invalid_arguments_do_not_even_resolve_the_default_table PASSED [ 88%]
+tests/test_m08_pagination.py::test_real_traversal_has_no_duplicates_or_omissions_and_preserves_m05[1] PASSED [ 90%]
+tests/test_m08_pagination.py::test_real_traversal_has_no_duplicates_or_omissions_and_preserves_m05[2] PASSED [ 91%]
+tests/test_m08_pagination.py::test_real_traversal_has_no_duplicates_or_omissions_and_preserves_m05[20] PASSED [ 92%]
+tests/test_m08_pagination.py::test_real_empty_range_has_no_next_cursor PASSED [ 94%]
+tests/test_m08_pagination.py::test_real_fewer_items_than_page_size_returns_the_available_documents PASSED [ 95%]
+tests/test_m08_pagination.py::test_real_equal_timestamps_continue_without_claiming_an_event_id_tiebreak PASSED [ 97%]
+tests/test_m08_pagination.py::test_real_mixed_v1_v2_documents_keep_all_data_and_decimal_measurements PASSED [ 98%]
+tests/test_m08_pagination.py::test_real_insertions_before_and_after_the_cursor_demonstrate_no_snapshot PASSED [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: /tmp/cdrl-m08-tests.nblEkG.json
+======================== 71 passed in 370.61s (0:06:10) ========================
+[3/6] Comprobando los cuatro escenarios mínimos y los adicionales...
+PASSED — Normal: varias páginas, tamaño y continuidad (ejecuciones: 3)
+PASSED — Límite 1: cero coincidencias y cursor nulo (ejecuciones: 1)
+PASSED — Límite 2: menos resultados que el tamaño de página (ejecuciones: 1)
+PASSED — Fallo declarado: cursor o tamaño inválido rechazado (ejecuciones: 39)
+Escenarios adicionales:
+PASSED — Integridad sin duplicados ni omisiones y compatibilidad M05 (ejecuciones: 3)
+PASSED — Continuidad con cursor JSON (ejecuciones: 1)
+PASSED — Inserciones entre páginas sin snapshot (ejecuciones: 1)
+PASSED — Timestamps repetidos sin desempate inventado (ejecuciones: 1)
+PASSED — Documentos v1/v2 y medidas Decimal (ejecuciones: 1)
+Los grupos pueden compartir pruebas; no se suman como ejecuciones distintas.
+[4/6] Validando evidence y la referencia histórica del commit...
+Commit histórico de evidence disponible: 92e68dbec6e2f7cfc06f15e71c234fad82da33fe
+[5/6] Validando benchmark almacenado, sin repetir mediciones...
+OK: 10000 documentos, 100 repeticiones por escenario, página de 20.
+baseline_full_query: p50=794.441 ms, p95=970.462 ms
+paginated_first_page: p50=4.794 ms, p95=6.338 ms
+paginated_full_traversal: p50=3000.671 ms, p95=3186.263 ms
+[6/6] Mostrando resumen final y trazabilidad...
+Escenarios mínimos: 4/4 aprobados
+Pruebas pytest: 71/71 aprobadas (incluyen parametrizaciones)
+Benchmark almacenado: validado; no ejecutado nuevamente
+HEAD: 249775da620f6c6efc110708d14959cb3fc504ee
+Fuentes M08: sin cambios respecto a HEAD
+Benchmark: artifacts/m08-pagination-benchmark.json SHA-256: 405709e9514c56ccbf782fb0e4f7d706eb094b9192a87c7f9c7ab8f42ab87aa9
+Evidencia: evidence/m08-pagination-index-performance.json; no se sobrescribe automáticamente.
+Reporte pytest: temporal; se elimina al terminar.
+M08 completado correctamente.
+
+== M09 / seguridad NoSQL y auditoría ==
+Python M09: .venv/bin/python
+== M09 / seguridad NoSQL y auditoría ==
+[1/4] Comprobando archivos y estado de las fuentes...
+[2/4] Ejecutando las cuatro suites M09 con DynamoDB Local...
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.1.1, pluggy-1.7.0 -- /mnt/c/Users/david/opt-cdrl-base/.venv/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.14.4', 'Platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.7.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1'}}
+rootdir: /mnt/c/Users/david/opt-cdrl-base
+plugins: json-report-1.5.0, metadata-3.1.1
+collecting ... collected 193 items
+
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_reader] PASSED [  0%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_writer] PASSED [  1%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_operator] PASSED [  1%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-GetItem-cdrl_migrator] PASSED [  2%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_reader] PASSED [  2%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_writer] PASSED [  3%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_operator] PASSED [  3%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-Query-cdrl_migrator] PASSED [  4%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_reader] PASSED [  4%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_writer] PASSED [  5%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_operator] PASSED [  5%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-PutItem-cdrl_migrator] PASSED [  6%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_reader] PASSED [  6%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_writer] PASSED [  7%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_operator] PASSED [  7%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-UpdateItem-cdrl_migrator] PASSED [  8%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_reader] PASSED [  8%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_writer] PASSED [  9%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_operator] PASSED [  9%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-DeleteItem-cdrl_migrator] PASSED [ 10%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_reader] PASSED [ 10%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_writer] PASSED [ 11%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_operator] PASSED [ 11%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_events-ReadOperationalSummary-cdrl_migrator] PASSED [ 12%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_reader] PASSED [ 12%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_writer] PASSED [ 13%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_operator] PASSED [ 13%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-GetItem-cdrl_migrator] PASSED [ 14%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_reader] PASSED [ 15%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_writer] PASSED [ 15%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_operator] PASSED [ 16%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-Query-cdrl_migrator] PASSED [ 16%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_reader] PASSED [ 17%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_writer] PASSED [ 17%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_operator] PASSED [ 18%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-PutItem-cdrl_migrator] PASSED [ 18%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_reader] PASSED [ 19%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_writer] PASSED [ 19%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_operator] PASSED [ 20%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-UpdateItem-cdrl_migrator] PASSED [ 20%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_reader] PASSED [ 21%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_writer] PASSED [ 21%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_operator] PASSED [ 22%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-DeleteItem-cdrl_migrator] PASSED [ 22%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_reader] PASSED [ 23%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_writer] PASSED [ 23%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_operator] PASSED [ 24%]
+tests/test_m09_authorization.py::test_exact_role_action_resource_matrix[cdrl_audit_log-ReadOperationalSummary-cdrl_migrator] PASSED [ 24%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[admin-GetItem-cdrl_events] PASSED [ 25%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-Scan-cdrl_events] PASSED [ 25%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-GetItem-unrelated_table] PASSED [ 26%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[CDRL_READER-GetItem-cdrl_events] PASSED [ 26%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-getitem-cdrl_events] PASSED [ 27%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[None-GetItem-cdrl_events] PASSED [ 27%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[role6-GetItem-cdrl_events] PASSED [ 28%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-action7-cdrl_events] PASSED [ 29%]
+tests/test_m09_authorization.py::test_undeclared_or_malformed_permission_is_denied[cdrl_reader-GetItem-resource8] PASSED [ 29%]
+tests/test_m09_authorization.py::test_only_context_issued_by_the_configured_registry_is_trusted PASSED [ 30%]
+tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[None] PASSED [ 30%]
+tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[cdrl_reader] PASSED [ 31%]
+tests/test_m09_authorization.py::test_untrusted_identity_is_audited_without_backend_access[identity2] PASSED [ 31%]
+tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_reader] PASSED [ 32%]
+tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_writer] PASSED [ 32%]
+tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_operator] PASSED [ 33%]
+tests/test_m09_authorization.py::test_delete_update_and_audit_crud_are_denied_without_changing_data[cdrl_migrator] PASSED [ 33%]
+tests/test_m09_authorization.py::test_denial_precedes_argument_validation_and_default_table_resolution PASSED [ 34%]
+tests/test_m09_authorization.py::test_writer_creates_once_reader_preserves_version_and_denials_preserve_data[1] PASSED [ 34%]
+tests/test_m09_authorization.py::test_writer_creates_once_reader_preserves_version_and_denials_preserve_data[2] PASSED [ 35%]
+tests/test_m09_authorization.py::test_missing_event_returns_none_with_audited_success PASSED [ 35%]
+tests/test_m09_authorization.py::test_operator_gets_only_projected_operational_fields PASSED [ 36%]
+tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[None] PASSED [ 36%]
+tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[unsafe_type1] PASSED [ 37%]
+tests/test_m09_authorization.py::test_operator_rejects_unsupported_or_nested_type_values[unsafe.type] PASSED [ 37%]
+tests/test_m09_authorization.py::test_authorized_invalid_input_is_audited_without_writing_or_querying PASSED [ 38%]
+tests/test_m09_authorization.py::test_unknown_action_and_resource_are_normalized_before_audit_integration PASSED [ 38%]
+tests/test_m09_authorization.py::test_m05_indexed_queries_and_native_m08_cursor_are_preserved PASSED [ 39%]
+tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_writer] PASSED [ 39%]
+tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_operator] PASSED [ 40%]
+tests/test_m09_authorization.py::test_all_query_variants_deny_non_readers_before_backend[cdrl_migrator] PASSED [ 40%]
+tests/test_m09_authorization.py::test_audit_acknowledgement_surrounds_backend_and_uses_distinct_records PASSED [ 41%]
+tests/test_m09_authorization.py::test_audit_dependency_is_required[None] PASSED [ 41%]
+tests/test_m09_authorization.py::test_audit_dependency_is_required[False] PASSED [ 42%]
+tests/test_m09_authorization.py::test_audit_dependency_is_required[discard] PASSED [ 43%]
+tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[False] PASSED [ 43%]
+tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[None] PASSED [ 44%]
+tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[1] PASSED [ 44%]
+tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[saved] PASSED [ 45%]
+tests/test_m09_authorization.py::test_missing_positive_audit_acknowledgement_blocks_sensitive_write[acknowledgement4] PASSED [ 45%]
+tests/test_m09_authorization.py::test_failed_denial_audit_still_denies_without_database_access PASSED [ 46%]
+tests/test_m09_authorization.py::test_post_write_audit_failure_reports_possible_write_without_faking_rollback PASSED [ 46%]
+tests/test_m09_authorization.py::test_post_read_audit_failure_does_not_return_an_unaudited_document PASSED [ 47%]
+tests/test_m09_authorization.py::test_backend_error_is_audited_without_copying_exception_secrets PASSED [ 47%]
+tests/test_m09_authorization.py::test_real_writer_reader_duplicate_and_denied_delete[1] PASSED [ 48%]
+tests/test_m09_authorization.py::test_real_writer_reader_duplicate_and_denied_delete[2] PASSED [ 48%]
+tests/test_m09_authorization.py::test_real_mixed_versions_use_native_cursor_and_keep_operational_summary_safe PASSED [ 49%]
+tests/test_m09_authorization.py::test_real_failed_pre_write_audit_leaves_event_absent PASSED [ 49%]
+tests/test_m09_security_audit.py::test_security_audit_sink_writes_conditional_record_without_mutating_input PASSED [ 50%]
+tests/test_m09_security_audit.py::test_duplicate_audit_id_never_overwrites_existing_security_log PASSED [ 50%]
+tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra0] PASSED [ 51%]
+tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra1] PASSED [ 51%]
+tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra2] PASSED [ 52%]
+tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra3] PASSED [ 52%]
+tests/test_m09_security_audit.py::test_unexpected_client_details_cannot_be_persisted[extra4] PASSED [ 53%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[auditId-not-a-uuid] PASSED [ 53%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[attemptId-None] PASSED [ 54%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[role-administrator] PASSED [ 54%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[action-DropTable] PASSED [ 55%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[resource-private-tokens] PASSED [ 55%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[result-passed] PASSED [ 56%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[reason-some arbitrary client text] PASSED [ 56%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06T12:00:00] PASSED [ 57%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06 12:00:00Z] PASSED [ 58%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[timestamp-2026-11-06T12:00:00+02:00] PASSED [ 58%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[actorId-Bearer synthetic-token] PASSED [ 59%]
+tests/test_m09_security_audit.py::test_invalid_audit_format_is_denied_before_persistence[actorId-Basic synthetic-credentials] PASSED [ 59%]
+tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[attempt-authorized_attempt] PASSED [ 60%]
+tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[success-operation_completed] PASSED [ 60%]
+tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[error-operation_failed] PASSED [ 61%]
+tests/test_m09_security_audit.py::test_all_agreed_security_results_are_accepted[denied-untrusted_identity] PASSED [ 61%]
+tests/test_m09_security_audit.py::test_each_emission_can_keep_attempt_id_but_has_distinct_audit_id PASSED [ 62%]
+tests/test_m09_security_audit.py::test_sensitive_keys_are_sanitized_recursively_by_existing_m06_utility PASSED [ 62%]
+tests/test_m09_security_audit.py::test_m06_migration_audit_and_m09_security_audit_coexist_without_schema_changes PASSED [ 63%]
+tests/test_m09_security_audit.py::test_fixture_declares_expected_audit_contract PASSED [ 63%]
+tests/test_m09_security_audit.py::test_security_audit_is_durable_and_append_only_in_dynamodb_local PASSED [ 64%]
+tests/test_m09_security_audit.py::test_dynamodb_error_is_not_reported_as_success PASSED [ 64%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case0] PASSED [ 65%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case1] PASSED [ 65%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case2] PASSED [ 66%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case3] PASSED [ 66%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case4] PASSED [ 67%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case5] PASSED [ 67%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case6] PASSED [ 68%]
+tests/test_m09_abuse.py::test_declared_permission_matrix_matches_secured_operations[case7] PASSED [ 68%]
+tests/test_m09_abuse.py::test_reader_can_read_event_and_audit_is_persisted PASSED [ 69%]
+tests/test_m09_abuse.py::test_writer_can_create_once_with_durable_audit PASSED [ 69%]
+tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_reader] PASSED [ 70%]
+tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_writer] PASSED [ 70%]
+tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_operator] PASSED [ 71%]
+tests/test_m09_abuse.py::test_delete_event_is_denied_to_every_role_without_backend_call[cdrl_migrator] PASSED [ 72%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-read_audit-params0] PASSED [ 72%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-write_audit-params1] PASSED [ 73%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-update_audit-params2] PASSED [ 73%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_reader-delete_audit-params3] PASSED [ 74%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-read_audit-params0] PASSED [ 74%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-write_audit-params1] PASSED [ 75%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-update_audit-params2] PASSED [ 75%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_writer-delete_audit-params3] PASSED [ 76%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-read_audit-params0] PASSED [ 76%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-write_audit-params1] PASSED [ 77%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-update_audit-params2] PASSED [ 77%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_operator-delete_audit-params3] PASSED [ 78%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-read_audit-params0] PASSED [ 78%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-write_audit-params1] PASSED [ 79%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-update_audit-params2] PASSED [ 79%]
+tests/test_m09_abuse.py::test_no_user_role_can_access_or_modify_audit_logs[cdrl_migrator-delete_audit-params3] PASSED [ 80%]
+tests/test_m09_abuse.py::test_unknown_actor_is_denied_without_event_io PASSED [ 80%]
+tests/test_m09_abuse.py::test_reader_cannot_create_and_writer_cannot_read PASSED [ 81%]
+tests/test_m09_abuse.py::test_operator_receives_only_whitelisted_operational_fields PASSED [ 81%]
+tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations PASSED [ 82%]
+tests/test_m09_abuse.py::test_audit_write_failure_prevents_event_creation PASSED [ 82%]
+tests/test_m09_abuse.py::test_late_audit_failure_does_not_claim_rollback PASSED [ 83%]
+tests/test_m09_abuse.py::test_consecutive_denials_have_distinct_audit_and_attempt_ids PASSED [ 83%]
+tests/test_m09_abuse.py::test_audit_record_contains_no_request_content_or_secret PASSED [ 84%]
+tests/test_m09_abuse.py::test_end_to_end_authorization_and_durable_audit_in_dynamodb_local PASSED [ 84%]
+tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v1] PASSED [ 85%]
+tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v2] PASSED [ 86%]
+tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-PutItem] PASSED [ 86%]
+tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-UpdateItem] PASSED [ 87%]
+tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_writer-GetItem] PASSED [ 87%]
+tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_operator-GetItem] PASSED [ 88%]
+tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_migrator-Query] PASSED [ 88%]
+tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_reader] PASSED [ 89%]
+tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_writer] PASSED [ 89%]
+tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_operator] PASSED [ 90%]
+tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_migrator] PASSED [ 90%]
+tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader] PASSED [ 91%]
+tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer] PASSED [ 91%]
+tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator] PASSED [ 92%]
+tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator] PASSED [ 92%]
+tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[unknown] PASSED [ 93%]
+tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[role-string] PASSED [ 93%]
+tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[client-dict] PASSED [ 94%]
+tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[foreign-registry] PASSED [ 94%]
+tests/test_m09_integration.py::test_operator_only_receives_safe_summary_with_durable_audit PASSED [ 95%]
+tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v1] PASSED [ 95%]
+tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v2] PASSED [ 96%]
+tests/test_m09_integration.py::test_missing_event_is_audited_without_inventing_a_document PASSED [ 96%]
+tests/test_m09_integration.py::test_mixed_versions_paginate_without_omissions_and_audit_each_page PASSED [ 97%]
+tests/test_m09_integration.py::test_invalid_cursor_persists_error_before_query PASSED [ 97%]
+tests/test_m09_integration.py::test_recursive_sanitization_and_m06_m09_logs_coexist PASSED [ 98%]
+tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[authorized-create] PASSED [ 98%]
+tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[denied-delete] PASSED [ 99%]
+tests/test_m09_integration.py::test_audit_failure_after_write_reports_uncertainty_without_fake_rollback PASSED [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: /mnt/c/Users/david/opt-cdrl-base/artifacts/.m09-7av459al/pytest.json
+======================= 193 passed in 1590.04s (0:26:30) =======================
+[3/4] Validando escenarios y generando artifact...
+PASSED — normal: 2 ejecuciones
+PASSED — boundary1: 5 ejecuciones
+PASSED — boundary2: 4 ejecuciones
+PASSED — declaredFailure: 4 ejecuciones
+PASSED — trustedIdentity: 4 ejecuciones
+PASSED — operationalSummary: 1 ejecuciones
+PASSED — durableAudit: 2 ejecuciones
+PASSED — sanitization: 2 ejecuciones
+PASSED — distinctAuditIds: 1 ejecuciones
+PASSED — abuseRemediation: 1 ejecuciones
+PASSED — auditFailureBeforeOperation: 2 ejecuciones
+PASSED — auditFailureAfterWrite: 1 ejecuciones
+PASSED — mixedVersionsAndPagination: 1 ejecuciones
+PASSED — duplicateWrite: 2 ejecuciones
+PASSED — missingEvent: 1 ejecuciones
+PASSED — invalidCursor: 1 ejecuciones
+[4/4] Resumen y trazabilidad:
+M09: 193/193 pruebas aprobadas; matriz: 48 combinaciones.
+HEAD: 249775da620f6c6efc110708d14959cb3fc504ee
+Fuentes: coinciden con HEAD
+Artifact: artifacts/m09-nosql-security-audit-results.json
+SHA-256: c4471d6265dcce2c75fbc639fcbaa593e33167bb002477be78c7fb12838d0374
+IAM AWS: no verificado. M09 completado correctamente.
+
+Verificación integrada M01-M09 completada correctamente.
