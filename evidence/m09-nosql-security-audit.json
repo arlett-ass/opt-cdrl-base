@@ -251,8 +251,8 @@
       {
         "command": "make queries",
         "path": "artifacts/m09-local-query-transcript.txt",
-        "format": "user_shared_terminal_transcript_normalized_to_LF",
-        "sha256": "5fb86c19d2ef57fb194590f3c9b79fcf9e098431d421595c9d03e8d7c6248dbb"
+        "format": "user_shared_terminal_transcript_normalized_to_LF_and_trimmed_line_ends",
+        "sha256": "fc983800df3f27d747125cb1a1d1a31af74f122e633689f151f8adc112cdca2b"
       }
     ],
     "m09Verification": "passed"

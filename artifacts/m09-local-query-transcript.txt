@@ -225,4 +225,4 @@ echo "Código de salida: $?"
   }
 }
 Código de salida: 0
-(.venv) david@David:/mnt/c/Users/david/opt-cdrl-base$ 
+(.venv) david@David:/mnt/c/Users/david/opt-cdrl-base$
