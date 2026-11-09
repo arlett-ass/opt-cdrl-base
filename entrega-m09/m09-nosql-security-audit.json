@@ -1,0 +1,242 @@
+{
+  "assignmentId": "m09-nosql-security-audit",
+  "commitSha": "2beb3623602597f523065ad93cb3a86709954ae7",
+  "tag": "week-09-final",
+  "tagCommitSha": "2beb3623602597f523065ad93cb3a86709954ae7",
+  "commands": [
+    "make setup",
+    "make verify",
+    "make run"
+  ],
+  "results": {
+    "status": "passed_final_main_validation",
+    "setup": "passed",
+    "setupExecutions": 2,
+    "makeVerify": {
+      "status": "passed",
+      "total": 345,
+      "passed": 345,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "milestones": {
+        "M01": 4,
+        "M02": 12,
+        "M03": 4,
+        "M04": 4,
+        "M05": 4,
+        "M06": 5,
+        "M07": 48,
+        "M08": 71,
+        "M09": 193
+      }
+    },
+    "makeRun": {
+      "status": "passed",
+      "foregroundProcessObserved": true,
+      "shutdown": "SIGINT_after_functional_checks",
+      "functionalChecks": "passed",
+      "postgresql": "tres migraciones y 50 lecturas sinteticas verificadas",
+      "dynamodb": "writer crea; reader consulta; DeleteItem denegado; documento intacto; cinco logs persistidos para tres intentos",
+      "processReturnCodeAfterRequestedStop": -2,
+      "requestedStopIsStartupFailure": false
+    },
+    "authorization": {
+      "status": "passed",
+      "matrixCombinations": 48,
+      "scope": "Python_application_layer",
+      "awsIamVerified": false
+    },
+    "audit": {
+      "status": "passed",
+      "requiredFields": [
+        "action",
+        "actorId",
+        "attemptId",
+        "auditId",
+        "reason",
+        "resource",
+        "result",
+        "role",
+        "timestamp"
+      ],
+      "durableLocalAudit": "passed",
+      "sanitization": "passed",
+      "distinctIdentifiers": "passed",
+      "userAuditAccessDenied": "passed"
+    },
+    "abuseRemediation": {
+      "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations"
+      ],
+      "scope": "isolated_in_memory_fixture",
+      "before": "excessive_DeleteItem_permission_deletes_synthetic_event",
+      "after": "secured_operation_denies_DeleteItem_and_preserves_event",
+      "awsPermissionsChanged": false
+    },
+    "tests": {
+      "total": 193,
+      "passed": 193,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": {
+        "tests/test_m09_authorization.py": 96,
+        "tests/test_m09_security_audit.py": 29,
+        "tests/test_m09_abuse.py": 39,
+        "tests/test_m09_integration.py": 29
+      },
+      "status": "passed"
+    },
+    "acceptance": {
+      "normal": "Writer crea documentos v1/v2; reader consulta; auditoria persistida de los intentos permitidos.",
+      "boundary1": "Reader no crea ni actualiza; writer/operator no leen directamente; migrator no consulta. Datos intactos y denegaciones auditadas.",
+      "boundary2": "Los cuatro roles no leen ni alteran auditoria; logs previos intactos y nueva denegacion.",
+      "declaredFailure": "DeleteItem denegado para los cuatro roles; documento intacto y rechazo auditado.",
+      "additional": [
+        "actor desconocido y contextos falsificados",
+        "resumen operacional limitado a eventId/type",
+        "sanitizacion recursiva y coexistencia de logs M06/M09",
+        "identificadores de auditoria distintos",
+        "fallo de auditoria previo bloquea la operacion",
+        "fallo de auditoria posterior informa incertidumbre sin prometer rollback",
+        "paginacion M08 y documentos v1/v2",
+        "duplicados, evento inexistente y cursor invalido"
+      ]
+    },
+    "acceptanceSummary": {
+      "minimumScenarios": 4,
+      "passedScenarios": 4,
+      "pytestExecuted": 193,
+      "pytestPassed": 193,
+      "countsFromCurrentReport": true,
+      "normalExecutions": 2,
+      "boundary1Executions": 5,
+      "boundary2Executions": 4,
+      "declaredFailureExecutions": 4,
+      "groupsAreNotAdditive": true
+    },
+    "verifyOutputSha256": "2f8c24ee81521db467d7e7ea30821f2b36027c6e1371be0353f3ad2e4bf8ec53",
+    "mainCI": {
+      "status": "success",
+      "workflow": "CDRL feedback",
+      "headSha": "2beb3623602597f523065ad93cb3a86709954ae7",
+      "runId": 42545155971,
+      "url": "https://github.com/arlett-ass/opt-cdrl-base/actions/runs/42545155971",
+      "evidenceSource": "pagina publica de GitHub Actions con Status Success y SHA completo coincidente"
+    },
+    "m09Verification": "passed",
+    "m08BenchmarkValidation": "stored_measurements_validated_not_rerun"
+  },
+  "submission": {
+    "repositoryUrl": "https://github.com/arlett-ass/opt-cdrl-base.git",
+    "targetBranch": "main",
+    "weeklyTag": "week-09-final",
+    "finalCommitSha": "2beb3623602597f523065ad93cb3a86709954ae7",
+    "status": "validated_and_tagged",
+    "pullRequests": [
+      {
+        "number": 43,
+        "status": "merged",
+        "target": "development",
+        "url": "https://github.com/arlett-ass/opt-cdrl-base/pull/43"
+      },
+      {
+        "number": 44,
+        "status": "merged",
+        "target": "development",
+        "url": "https://github.com/arlett-ass/opt-cdrl-base/pull/44"
+      },
+      {
+        "number": 45,
+        "status": "merged",
+        "target": "main",
+        "mergeCommitSha": "2beb3623602597f523065ad93cb3a86709954ae7",
+        "mergedAt": "2026-11-09T01:21:32Z",
+        "url": "https://github.com/arlett-ass/opt-cdrl-base/pull/45"
+      }
+    ],
+    "classroom": "pending_user_submission"
+  },
+  "assumptions": [
+    "Se valida el commit final exacto de main, integrado mediante el PR #45, sin modificar fuentes ni outputs versionados.",
+    "Los actores y datos de las pruebas son sinteticos; el contexto del servidor es confiable.",
+    "Las validaciones locales de David y los registros cloud anteriores se conservan en la evidencia historica del repositorio."
+  ],
+  "limitations": [
+    "DynamoDB Local no aplica IAM. La plantilla IAM no fue desplegada ni validada en AWS Academy.",
+    "La remediacion del permiso excesivo utiliza un fixture aislado en memoria; la persistencia se prueba con DynamoDB Local.",
+    "Las escrituras del evento y la auditoria son independientes; un fallo posterior puede dejar el evento persistido.",
+    "Los GSIs son eventualmente consistentes y la paginacion no garantiza snapshot ni desempate global por eventId.",
+    "El benchmark M08 almacenado se valida sin repetir mediciones. La correccion M03 es un trabajo independiente y no se declara incluida.",
+    "Este JSON final se entrega fuera del arbol Git para consignar el SHA inmutable del tag. El JSON versionado enlazado conserva la trazabilidad historica de validaciones anteriores.",
+    "Classroom no se ha enviado automaticamente; el usuario presenta URL, tag, SHA y este archivo."
+  ],
+  "verifiedAt": "2026-11-09T01:22:42.522146+00:00",
+  "configuration": {
+    "python": "3.14.9",
+    "database": "PostgreSQL 16 en Docker Compose",
+    "dynamodb": "DynamoDB Local en Docker Compose",
+    "boto3": "1.42.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "fixtures": "sinteticos",
+    "validationPorts": {
+      "postgres": 55439,
+      "dynamodb": 18009,
+      "scope": "servicios temporales aislados, eliminados al concluir"
+    },
+    "freshVolumes": true,
+    "awsIamVerified": false
+  },
+  "sourceSha256": {
+    "config/iam/m09-dynamodb-policy.json": "5990fa54756e07e0a31028512274ceed16b924c241fcae09d71f3fbdb41a3399",
+    "requirements.txt": "8c8f94c9c9fd7aeb611585ad7168331056815933410c80a978cc696adb4d610b",
+    "scripts/load_env.sh": "1389fd4423a49ab7097497ad1bfa982ba23d1ced006149a457feb3e16af4730f",
+    "scripts/verify_all.sh": "8c7fd7fb4e5c0eb40b6d4979cad8ee04538fc3b2170a66667b7f5c5f9d0d175e",
+    "scripts/verify_m09.sh": "10672dd69f11fde32a14620a7326a2a10049d27b19783534e212d954e34eba06",
+    "src/m05/__init__.py": "e5e0d118a411b095377fe0fb63f85c6a7a41ef6160ec43da813fa30ca73baa91",
+    "src/m05/document_store.py": "feca04cb7c1b50005ed9bd85af6ac69264d327b28501480a38d34e020e0be561",
+    "src/m05/dynamodb_client.py": "7508684695c14bd6ef3fbfbc34186ba0105817f0edc862af5f256cbdae980fe2",
+    "src/m05/event_contract.py": "06edc0344032a08ddff0d88cc7134d4097d63b26bf193bd624fc3d40320c06cf",
+    "src/m05/table_setup.py": "cdc52c2fc9c80f74a7e760a9c85183e70f70f8a159cde249fea356b37b3b59e8",
+    "src/m06/__init__.py": "a4d65dfc19dc3cc9f705d6d2506a22c0dbbb923dc1a1eb840d41e02e473e72f4",
+    "src/m06/audit_store.py": "d003a91b1807dc51ace9a774f3752ec86d0bf280e2d9dd49237379fb0a1c4d64",
+    "src/m06/audited_operations.py": "3e21ebf1c467c679ec87c22de7735e3eb6c6be9f2131e75afb087856a701ec3c",
+    "src/m06/recovery.py": "b698495de246c346c1c0d826c5e343c5ce8e45c4ecefc3f0fd2285c876c1d71b",
+    "src/m06/schema_evolution.py": "a3670f3104e9a246172c6626d5fdcedd1a3fb3f2a2fb5ab632d996a5cc37b4da",
+    "src/m06/versioned_store.py": "bbabc430d54a99d232f2ee03abc504b9f736b22b4971d8220a67513b7e49b3ec",
+    "src/m07/__init__.py": "6a89bb819864df2f6437877b422a19748cdf8172e1379ab3bb8b6b156e2b7a7f",
+    "src/m07/compatibility.py": "49490a3e53963e69aecf061b75ff12c6a5e2ee03bd1de7f4bd09f9b0e5739e66",
+    "src/m07/migration.py": "37536bb262324f1fe85085e72873cb39aa9d8ea5d574cc80aa2ff1d12b8e28a8",
+    "src/m07/rollback.py": "4a0a2ce8d7e93911cbcdee0617db578623074f5b661a6a4e0ad0bf868fd8b16c",
+    "src/m07/versioning.py": "c9d016e54152d46f669aefede86e8e6389e5d84bd559e39a8a39e3ecbd510ec0",
+    "src/m08/__init__.py": "c170920ee90d74af13acb926f9461c5a84fdc8203e865aa9f0e1fe7d91239332",
+    "src/m08/benchmark.py": "3b677345bb318513947dd9f114f79d215021d9317f547a40b3543410a474d96f",
+    "src/m08/pagination.py": "5e141ebe9ea83950ef760ec8897ff6711945a2e37fa7675f7598c2a73434428b",
+    "src/m09/__init__.py": "ef665059b0be79e0b78d57dbe42508fb957aa21d620fc99618d63bbc37a5a4b8",
+    "src/m09/authorization.py": "0b178050ba63e634d08046417e4d411d0a18c8748b02df6f23f7df997266b22e",
+    "src/m09/policy.py": "8116c2e2fa42e9a8b6e598e1a5f9b13774b44e6573172ac696cd01a6222610b5",
+    "src/m09/secure_operations.py": "317735c1e359a3e2f18569cd33028b27fbe067952f66db9438dcae790426c1a8",
+    "src/m09/security_audit.py": "7ab1d577f1be36a019a7790fdf477dd775dba9f2c66a21521dd93ea2f8bddb49",
+    "tests/fixtures/m05_events.json": "cf6a4c27d2845183c89c6b6dbd89caaf5d56ee422182f9734358ac648537ca73",
+    "tests/fixtures/m06_audit_cases.json": "7ff810c033c554df3681305288d0c4d8af4e3e4c9d508fd03c118e3dbd20075d",
+    "tests/fixtures/m06_recovery_fixture.json": "b68b61f7be5604f57e2c85d5afd70e95c083ac381e304d2d05fac6ced932628e",
+    "tests/fixtures/m06_versioned_events.json": "bf74c57917dba073e32ae9337006c86f23b5ce19e363ba97425dc3d2b7804a4a",
+    "tests/fixtures/m07_consumer_cases.json": "6cb49d44f130f87a71c653d0907d1943b921f8c11e95b9c9513f1889e2700ac3",
+    "tests/fixtures/m07_rollback_cases.json": "32439226e9a5ceb6001dc3c75d249d917543d458a67704f32a692fbb538be209",
+    "tests/fixtures/m07_versioned_documents.json": "2f785da095c4ca89f59b7aae94f166346fa85a073e7e817d9e740c80204767e8",
+    "tests/fixtures/m09_security_cases.json": "ee6c07fdcf9fb41552bbbac140186d5f79b3d216e900ab64a14ae21d75cf78fd",
+    "tests/test_m09_abuse.py": "353510958fe250f51952b714168dca6cbb543c1681230045224b1a6ea298ae2d",
+    "tests/test_m09_authorization.py": "f9c1304794adecac59e578d036579431067bbe4dd88f5abb0ae40d5ec4f2e146",
+    "tests/test_m09_integration.py": "c02d35c0d6f31d87d02b685978d2797276470aa300e26bb46f8c6d69d06b0bad",
+    "tests/test_m09_security_audit.py": "d36bcf68642dc739e216e86c6b69757169c9ddd3abe2e0cd3a314103ba5b099c"
+  },
+  "provenance": {
+    "source": "validacion final del commit exacto etiquetado",
+    "tagAnchoredFinalEvidenceSha256": "6e2f77274e0d37040f5ae41b6fc72b5e3d27fdaa8d7e671c6aa6fd207ba30326",
+    "presentation": "mismo contenido comprobado, organizado con campos tag y tagCommitSha como el ejemplo M08",
+    "historicalRepositoryEvidenceUrl": "https://github.com/arlett-ass/opt-cdrl-base/blob/week-09-final/evidence/m09-nosql-security-audit.json"
+  }
+}
