@@ -271,7 +271,7 @@
     "El benchmark M08 conservado se valido sin ejecutar nuevas mediciones.",
     "commitSha identifica el codigo probado; guardar esta evidencia crea un commit posterior. El SHA del tag final se registra en la entrega externa.",
     "La correccion de minimo privilegio PostgreSQL M03 no forma parte de esta rama; requiere un PR independiente y validacion propia.",
-    "El ADR esta Propuesto hasta revision del equipo. El PR, la integracion final, el tag y Classroom siguen pendientes; el CI de la rama se registra en submission.remoteCI.",
+    "ADR aceptado técnicamente tras revisión, pruebas e integración del PR #43. La integración y validación de main, el tag y Classroom siguen pendientes; los CI observados se identifican por su SHA.",
     "Una ejecucion posterior regenera el artifact; los hashes de esta evidencia identifican el registro historico guardado con ella.",
     "La validación local reutiliza volúmenes existentes; la comprobación con volúmenes nuevos se conserva por separado en previousValidations.",
     "La salida local de setup y el arranque de make run fueron compartidos en el chat. Los archivos adjuntos conservan el log completo de make verify y una transcripción de make queries; no se afirma cierre controlado local.",
@@ -348,7 +348,7 @@
     "weeklyTag": "week-09-final",
     "tagCreated": false,
     "finalCommitSha": null,
-    "status": "pending_team_review_pull_requests_main_validation_and_tag",
+    "status": "pending_documentation_closure_main_pull_request_final_validation_and_tag",
     "remoteCI": {
       "status": "success",
       "workflow": "CDRL feedback",
@@ -368,23 +368,45 @@
       "evidenceJson"
     ],
     "integrationPullRequest": {
-      "status": "ready_to_open",
+      "status": "merged",
+      "number": 43,
+      "url": "https://github.com/arlett-ass/opt-cdrl-base/pull/43",
       "base": "development",
       "head": "feat/m09-integration-david",
-      "compareUrl": "https://github.com/arlett-ass/opt-cdrl-base/compare/development...feat/m09-integration-david"
+      "headSha": "fc31e397568c48ced283cefe6c30f550a935d279",
+      "mergeCommitSha": "18fb1904f00b2f4ceea6e3da1e4f20f37b6c9c89",
+      "mergedAt": "2026-11-09T01:05:39Z",
+      "evidenceSource": "pagina publica del PR y referencia Git remota de development"
+    },
+    "developmentCI": {
+      "status": "success",
+      "workflow": "CDRL feedback",
+      "headSha": "18fb1904f00b2f4ceea6e3da1e4f20f37b6c9c89",
+      "runId": 42543687358,
+      "url": "https://github.com/arlett-ass/opt-cdrl-base/actions/runs/42543687358",
+      "observedAt": "2026-11-09T01:12:13.471583+00:00",
+      "evidenceSource": "pagina publica de GitHub Actions: completed successfully para el merge del PR #43",
+      "scope": "merge del PR #43 en development; no valida main ni commits posteriores"
+    },
+    "mainPullRequest": {
+      "status": "pending",
+      "base": "main",
+      "head": "development",
+      "compareUrl": "https://github.com/arlett-ass/opt-cdrl-base/compare/main...development"
     }
   },
   "davidChecklist": {
     "integrationTests": "passed_29_executions",
     "verifierAndJsonReport": "passed",
     "makeIntegration": "passed",
-    "adr": "written_proposed_pending_team_review",
+    "adr": "accepted_after_technical_review_tests_and_integration_pr43",
     "artifactAndEvidence": "recorded_from_David_uploaded_local_results",
     "regressionM01M08": "passed_152_executions",
     "cleanSetupVerifyRun": "passed_in_previous_cloud_validation; local_validation_reuses_existing_volumes",
-    "integrationPullRequest": "description_prepared_pending_creation",
+    "integrationPullRequest": "merged_pr43",
     "finalShaAndWeeklyTag": "pending_after_integration",
-    "localSetupVerifyRunAndQueries": "passed"
+    "localSetupVerifyRunAndQueries": "passed",
+    "developmentCI": "passed_for_pr43_merge"
   },
   "previousValidations": [
     {
