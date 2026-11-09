@@ -1,20 +1,21 @@
 {
   "assignmentId": "m09-nosql-security-audit",
-  "commitSha": "ddd718b2610fa69b72840f4015613295ff4f3a1a",
+  "commitSha": "249775da620f6c6efc110708d14959cb3fc504ee",
   "commands": [
     "make setup",
     "make verify",
     "make run"
   ],
   "results": {
-    "environment": "Docker Compose / PostgreSQL 16 / DynamoDB Local",
+    "environment": "Equipo local de David / WSL2 Ubuntu / Docker Compose / PostgreSQL 16 / DynamoDB Local",
     "setup": {
       "status": "passed",
       "executions": 2,
       "idempotent": true,
-      "freshVolumes": true,
-      "migrationCount": 3,
-      "syntheticReadingCount": 50
+      "freshVolumes": false,
+      "sourceCommitSha": "f6e2b7538856826ec26e205e97a2c781731ae8d0",
+      "evidenceSource": "salidas de terminal compartidas por David antes de actualizar verify_all.sh a 249775d",
+      "migrations": "001_schema.sql, 002_relational_model.sql y 003_security_roles.sql ya aplicadas; seed completado en ambas ejecuciones"
     },
     "authorization": {
       "status": "passed",
@@ -42,6 +43,10 @@
     },
     "abuseRemediation": {
       "status": "passed",
+      "testExecutions": 1,
+      "tests": [
+        "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations"
+      ],
       "scope": "isolated_in_memory_fixture",
       "before": "excessive_DeleteItem_permission_deletes_synthetic_event",
       "after": "secured_operation_denies_DeleteItem_and_preserves_event",
@@ -213,57 +218,41 @@
         "M08": 71,
         "M09": 193
       },
-      "m08Benchmark": "stored_measurements_validated_not_rerun"
+      "m08Benchmark": "stored_measurements_validated_not_rerun",
+      "exitCode": 0,
+      "exitCodeSource": "salida de terminal compartida por David; el log adjunto termina con éxito integrado"
     },
     "makeRun": {
-      "status": "passed",
+      "status": "passed_startup_and_sql_queries",
       "foregroundProcessObserved": true,
-      "shutdown": "SIGINT_after_functional_checks",
-      "functionalChecks": "passed",
-      "postgresql": "tres migraciones y 50 lecturas sinteticas",
-      "dynamodb": "creacion y lectura permitidas, eliminacion denegada, documento intacto",
-      "smokeAuditRecords": 5,
-      "smokeAttempts": 3,
-      "processReturnCodeAfterRequestedStop": -2,
-      "requestedStopIsStartupFailure": false
-    },
-    "verifierNegativeChecks": {
-      "status": "passed",
-      "total": 10,
-      "invalidReportCases": [
-        "zero-tests",
-        "skipped-test",
-        "wrong-counts",
-        "failed-teardown",
-        "missing-matrix-combination",
-        "missing-v2",
-        "missing-abuse-suite",
-        "duplicate-test-id"
-      ],
-      "awsMode": "rejected_exit_1",
-      "zeroTests": "rejected_pytest_exit_5_preserved",
-      "staleSuccessArtifact": "removed_before_new_execution",
-      "scope": "comprobaciones locales del validador y del script; no agregan ejecuciones a pytest"
+      "evidenceSource": "salida de make run compartida por David en el chat: ambos servicios Running y dynamodb-init terminado con código 0",
+      "sqlQueries": {
+        "command": "make queries",
+        "exitCode": 0,
+        "readingCount": 10,
+        "emptyWindowCount": 0,
+        "generatedAt": "2026-11-09T00:32:48.713008+00:00",
+        "transcript": "artifacts/m09-local-query-transcript.txt"
+      },
+      "dynamodbFunctionalCoverage": "193 pruebas M09 de la ejecución local; incluye 29 pruebas de integración sobre tablas temporales",
+      "shutdown": "not_recorded"
     },
     "artifacts": [
       "artifacts/m09-nosql-security-audit-results.json"
     ],
-    "artifactSha256": "3b532f11912f90d2cf88c277d9fe4f4457f64233bc64dea138b11bfd15ff4347",
+    "artifactSha256": "c4471d6265dcce2c75fbc639fcbaa593e33167bb002477be78c7fb12838d0374",
     "validationLogs": [
       {
-        "command": "make setup",
-        "path": "artifacts/m09-make-setup.log",
-        "sha256": "175832929e67e0f33a11472ddd38665d275d9a2c6f8c1e67515b1e07710454be"
-      },
-      {
         "command": "make verify",
-        "path": "artifacts/m09-make-verify.log",
-        "sha256": "26ad615d30af49828f6f32b33eaa043512180ca197758a3fab85f49e1264753e"
+        "path": "artifacts/m09-verify-david-local.log",
+        "format": "raw_command_output",
+        "sha256": "8997a91c5cb0dd49e5b614e8e1fb6c6e09fbf054a4736226743ee7cb38791241"
       },
       {
-        "command": "make run",
-        "path": "artifacts/m09-make-run.log",
-        "sha256": "30bf4f32d5d3c645d9132824da6ddb8f017a7fbb48014dbf6a0dd6e941cce8b5"
+        "command": "make queries",
+        "path": "artifacts/m09-local-query-transcript.txt",
+        "format": "user_shared_terminal_transcript_normalized_to_LF",
+        "sha256": "5fb86c19d2ef57fb194590f3c9b79fcf9e098431d421595c9d03e8d7c6248dbb"
       }
     ],
     "m09Verification": "passed"
@@ -283,16 +272,20 @@
     "commitSha identifica el codigo probado; guardar esta evidencia crea un commit posterior. El SHA del tag final se registra en la entrega externa.",
     "La correccion de minimo privilegio PostgreSQL M03 no forma parte de esta rama; requiere un PR independiente y validacion propia.",
     "El ADR esta Propuesto hasta revision del equipo. PR, CI remoto, integracion final, tag y Classroom siguen pendientes.",
-    "Una ejecucion posterior regenera el artifact; los hashes de esta evidencia identifican el registro historico guardado con ella."
+    "Una ejecucion posterior regenera el artifact; los hashes de esta evidencia identifican el registro historico guardado con ella.",
+    "La validación local reutiliza volúmenes existentes; la comprobación con volúmenes nuevos se conserva por separado en previousValidations.",
+    "La salida local de setup y el arranque de make run fueron compartidos en el chat. Los archivos adjuntos conservan el log completo de make verify y una transcripción de make queries; no se afirma cierre controlado local.",
+    "Los conteos de las comprobaciones negativas del verificador corresponden a la revisión cloud previa, no a ejecuciones adicionales en la computadora de David.",
+    "Diez huellas de fuentes locales corresponden a CRLF. Coinciden con el contenido del commit al contemplar esos saltos de línea; los bytes de los adjuntos originales se conservan sin cambios."
   ],
   "sourceState": {
-    "head": "ddd718b2610fa69b72840f4015613295ff4f3a1a",
+    "head": "249775da620f6c6efc110708d14959cb3fc504ee",
     "sourcesMatchHead": true,
     "sourceSha256": {
-      "config/iam/m09-dynamodb-policy.json": "5990fa54756e07e0a31028512274ceed16b924c241fcae09d71f3fbdb41a3399",
-      "requirements.txt": "8c8f94c9c9fd7aeb611585ad7168331056815933410c80a978cc696adb4d610b",
+      "config/iam/m09-dynamodb-policy.json": "613aa6e553826f57388dd24c530890cbf4f8cc45e40ef14deb1d670a0e86bb59",
+      "requirements.txt": "51039e7aaeaf07f78e360ba7b5da8830bdb44b0209f1a096504485b7971f0658",
       "scripts/load_env.sh": "1389fd4423a49ab7097497ad1bfa982ba23d1ced006149a457feb3e16af4730f",
-      "scripts/verify_all.sh": "0ec32d0c47b3b25444d7c7d29044304d230950edb052b385de3526eb3dc7fc89",
+      "scripts/verify_all.sh": "8c7fd7fb4e5c0eb40b6d4979cad8ee04538fc3b2170a66667b7f5c5f9d0d175e",
       "scripts/verify_m09.sh": "10672dd69f11fde32a14620a7326a2a10049d27b19783534e212d954e34eba06",
       "src/m05/__init__.py": "e5e0d118a411b095377fe0fb63f85c6a7a41ef6160ec43da813fa30ca73baa91",
       "src/m05/document_store.py": "feca04cb7c1b50005ed9bd85af6ac69264d327b28501480a38d34e020e0be561",
@@ -318,14 +311,14 @@
       "src/m09/policy.py": "8116c2e2fa42e9a8b6e598e1a5f9b13774b44e6573172ac696cd01a6222610b5",
       "src/m09/secure_operations.py": "317735c1e359a3e2f18569cd33028b27fbe067952f66db9438dcae790426c1a8",
       "src/m09/security_audit.py": "7ab1d577f1be36a019a7790fdf477dd775dba9f2c66a21521dd93ea2f8bddb49",
-      "tests/fixtures/m05_events.json": "cf6a4c27d2845183c89c6b6dbd89caaf5d56ee422182f9734358ac648537ca73",
-      "tests/fixtures/m06_audit_cases.json": "7ff810c033c554df3681305288d0c4d8af4e3e4c9d508fd03c118e3dbd20075d",
-      "tests/fixtures/m06_recovery_fixture.json": "b68b61f7be5604f57e2c85d5afd70e95c083ac381e304d2d05fac6ced932628e",
-      "tests/fixtures/m06_versioned_events.json": "bf74c57917dba073e32ae9337006c86f23b5ce19e363ba97425dc3d2b7804a4a",
-      "tests/fixtures/m07_consumer_cases.json": "6cb49d44f130f87a71c653d0907d1943b921f8c11e95b9c9513f1889e2700ac3",
-      "tests/fixtures/m07_rollback_cases.json": "32439226e9a5ceb6001dc3c75d249d917543d458a67704f32a692fbb538be209",
-      "tests/fixtures/m07_versioned_documents.json": "2f785da095c4ca89f59b7aae94f166346fa85a073e7e817d9e740c80204767e8",
-      "tests/fixtures/m09_security_cases.json": "ee6c07fdcf9fb41552bbbac140186d5f79b3d216e900ab64a14ae21d75cf78fd",
+      "tests/fixtures/m05_events.json": "7656edff6e38dcc6ec349822491ae27c4175e8ed2fd3f95fc3f9d708ca91c3aa",
+      "tests/fixtures/m06_audit_cases.json": "81915475b78360e1ec24b81e0654e0d9dc327b9dc2722398b93c40c91c2d56d1",
+      "tests/fixtures/m06_recovery_fixture.json": "d2aad045e4a61d576cbc7d8447d7855734dd1dd8fb326975681f2b872fdf2a72",
+      "tests/fixtures/m06_versioned_events.json": "d4f9dd1d6a84c2a58cfadcd949c45292323b5137eb7629237c675ecda1433880",
+      "tests/fixtures/m07_consumer_cases.json": "c44b1e4766924399b9d75d9129393dbad45e19cd0ba536170ef3605048291cd6",
+      "tests/fixtures/m07_rollback_cases.json": "d79f84d1ca93f6a6e907f3f51f7313c36fac2d7a2b3c3f96e4dbf31be8b1c5a9",
+      "tests/fixtures/m07_versioned_documents.json": "ae8db449404029c2ce0507525684a106e220a114e88b1f7a19fb0fa8972a2e90",
+      "tests/fixtures/m09_security_cases.json": "cc96420ae89f0429fa3de658e05c555ee84093cf35820743c1469ca98b56f684",
       "tests/test_m09_abuse.py": "353510958fe250f51952b714168dca6cbb543c1681230045224b1a6ea298ae2d",
       "tests/test_m09_authorization.py": "f9c1304794adecac59e578d036579431067bbe4dd88f5abb0ae40d5ec4f2e146",
       "tests/test_m09_integration.py": "c02d35c0d6f31d87d02b685978d2797276470aa300e26bb46f8c6d69d06b0bad",
@@ -333,17 +326,20 @@
     }
   },
   "validationSession": {
-    "startedAt": "2026-11-08T22:53:45.168112+00:00",
-    "finishedAt": "2026-11-08T22:54:16.338103+00:00",
-    "composeProject": "cdrl_m09_david_8a8218d5e509",
-    "freshVolumes": true,
+    "scope": "David_local_WSL2",
+    "verifiedAtUtc": "2026-11-09T00:30:25.092827+00:00",
+    "verifiedAtMexicoCity": "2026-11-08T18:30:25.092827-06:00",
+    "composeProject": "opt-cdrl-base",
+    "freshVolumes": false,
     "ports": {
-      "postgres": 55439,
-      "dynamodb": 18009
+      "postgres": 5432,
+      "dynamodb": 8000
     },
-    "temporaryResourcesCleanup": "passed"
+    "servicesShutdown": "not_recorded",
+    "inputArtifactSha256": "c4471d6265dcce2c75fbc639fcbaa593e33167bb002477be78c7fb12838d0374",
+    "inputVerifyLogSha256": "8997a91c5cb0dd49e5b614e8e1fb6c6e09fbf054a4736226743ee7cb38791241"
   },
-  "verifiedAt": "2026-11-08T22:54:13.869389+00:00",
+  "verifiedAt": "2026-11-09T00:30:25.092827+00:00",
   "submission": {
     "repositoryUrl": "https://github.com/arlett-ass/opt-cdrl-base",
     "sourceBranch": "feat/m09-integration-david",
@@ -361,10 +357,326 @@
     "verifierAndJsonReport": "passed",
     "makeIntegration": "passed",
     "adr": "written_proposed_pending_team_review",
-    "artifactAndEvidence": "recorded_from_actual_results",
+    "artifactAndEvidence": "recorded_from_David_uploaded_local_results",
     "regressionM01M08": "passed_152_executions",
-    "cleanSetupVerifyRun": "passed",
+    "cleanSetupVerifyRun": "passed_in_previous_cloud_validation; local_validation_reuses_existing_volumes",
     "integrationPullRequest": "pending",
-    "finalShaAndWeeklyTag": "pending_after_integration"
+    "finalShaAndWeeklyTag": "pending_after_integration",
+    "localSetupVerifyRunAndQueries": "passed"
+  },
+  "previousValidations": [
+    {
+      "scope": "cloud_clean_compose_session",
+      "commitSha": "ddd718b2610fa69b72840f4015613295ff4f3a1a",
+      "recordCommitSha": "f6e2b7538856826ec26e205e97a2c781731ae8d0",
+      "verifiedAt": "2026-11-08T22:54:13.869389+00:00",
+      "results": {
+        "environment": "Docker Compose / PostgreSQL 16 / DynamoDB Local",
+        "setup": {
+          "status": "passed",
+          "executions": 2,
+          "idempotent": true,
+          "freshVolumes": true,
+          "migrationCount": 3,
+          "syntheticReadingCount": 50
+        },
+        "authorization": {
+          "status": "passed",
+          "matrixCombinations": 48,
+          "scope": "Python_application_layer",
+          "awsIamVerified": false
+        },
+        "audit": {
+          "status": "passed",
+          "requiredFields": [
+            "action",
+            "actorId",
+            "attemptId",
+            "auditId",
+            "reason",
+            "resource",
+            "result",
+            "role",
+            "timestamp"
+          ],
+          "persistentLocalChecks": true,
+          "recursiveSanitization": "passed",
+          "denialsPreserveExistingLogs": "passed",
+          "distinctIdentifiers": "passed"
+        },
+        "abuseRemediation": {
+          "status": "passed",
+          "scope": "isolated_in_memory_fixture",
+          "before": "excessive_DeleteItem_permission_deletes_synthetic_event",
+          "after": "secured_operation_denies_DeleteItem_and_preserves_event",
+          "awsPermissionsChanged": false
+        },
+        "acceptance": {
+          "normal": {
+            "status": "passed",
+            "testExecutions": 2,
+            "tests": [
+              "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v1]",
+              "tests/test_m09_integration.py::test_normal_writer_reader_persists_event_and_security_audit[v2]"
+            ]
+          },
+          "boundary1": {
+            "status": "passed",
+            "testExecutions": 5,
+            "tests": [
+              "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-PutItem]",
+              "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_reader-UpdateItem]",
+              "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_writer-GetItem]",
+              "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_operator-GetItem]",
+              "tests/test_m09_integration.py::test_boundary_forbidden_event_access_never_reaches_backend[cdrl_migrator-Query]"
+            ]
+          },
+          "boundary2": {
+            "status": "passed",
+            "testExecutions": 4,
+            "tests": [
+              "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_reader]",
+              "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_writer]",
+              "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_operator]",
+              "tests/test_m09_integration.py::test_boundary_audit_access_denied_without_altering_previous_logs[cdrl_migrator]"
+            ]
+          },
+          "declaredFailure": {
+            "status": "passed",
+            "testExecutions": 4,
+            "tests": [
+              "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_reader]",
+              "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_writer]",
+              "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_operator]",
+              "tests/test_m09_integration.py::test_declared_failure_delete_is_denied_and_document_survives[cdrl_migrator]"
+            ]
+          }
+        },
+        "additionalScenarios": {
+          "trustedIdentity": {
+            "status": "passed",
+            "testExecutions": 4,
+            "tests": [
+              "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[unknown]",
+              "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[role-string]",
+              "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[client-dict]",
+              "tests/test_m09_integration.py::test_unknown_or_forged_identity_is_denied_and_audited[foreign-registry]"
+            ]
+          },
+          "operationalSummary": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_integration.py::test_operator_only_receives_safe_summary_with_durable_audit"
+            ]
+          },
+          "durableAudit": {
+            "status": "passed",
+            "testExecutions": 2,
+            "tests": [
+              "tests/test_m09_security_audit.py::test_security_audit_is_durable_and_append_only_in_dynamodb_local",
+              "tests/test_m09_abuse.py::test_end_to_end_authorization_and_durable_audit_in_dynamodb_local"
+            ]
+          },
+          "sanitization": {
+            "status": "passed",
+            "testExecutions": 2,
+            "tests": [
+              "tests/test_m09_abuse.py::test_audit_record_contains_no_request_content_or_secret",
+              "tests/test_m09_integration.py::test_recursive_sanitization_and_m06_m09_logs_coexist"
+            ]
+          },
+          "distinctAuditIds": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_abuse.py::test_consecutive_denials_have_distinct_audit_and_attempt_ids"
+            ]
+          },
+          "abuseRemediation": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_abuse.py::test_isolated_excessive_permission_is_removed_before_real_operations"
+            ]
+          },
+          "auditFailureBeforeOperation": {
+            "status": "passed",
+            "testExecutions": 2,
+            "tests": [
+              "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[authorized-create]",
+              "tests/test_m09_integration.py::test_audit_failure_before_operation_fails_closed[denied-delete]"
+            ]
+          },
+          "auditFailureAfterWrite": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_integration.py::test_audit_failure_after_write_reports_uncertainty_without_fake_rollback"
+            ]
+          },
+          "mixedVersionsAndPagination": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_integration.py::test_mixed_versions_paginate_without_omissions_and_audit_each_page"
+            ]
+          },
+          "duplicateWrite": {
+            "status": "passed",
+            "testExecutions": 2,
+            "tests": [
+              "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v1]",
+              "tests/test_m09_integration.py::test_duplicate_write_keeps_original_and_persists_error_without_secrets[v2]"
+            ]
+          },
+          "missingEvent": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_integration.py::test_missing_event_is_audited_without_inventing_a_document"
+            ]
+          },
+          "invalidCursor": {
+            "status": "passed",
+            "testExecutions": 1,
+            "tests": [
+              "tests/test_m09_integration.py::test_invalid_cursor_persists_error_before_query"
+            ]
+          }
+        },
+        "tests": {
+          "total": 193,
+          "passed": 193,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": {
+            "tests/test_m09_authorization.py": 96,
+            "tests/test_m09_security_audit.py": 29,
+            "tests/test_m09_abuse.py": 39,
+            "tests/test_m09_integration.py": 29
+          },
+          "status": "passed"
+        },
+        "makeVerify": {
+          "status": "passed",
+          "total": 345,
+          "passed": 345,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "milestones": {
+            "M01": 4,
+            "M02": 12,
+            "M03": 4,
+            "M04": 4,
+            "M05": 4,
+            "M06": 5,
+            "M07": 48,
+            "M08": 71,
+            "M09": 193
+          },
+          "m08Benchmark": "stored_measurements_validated_not_rerun"
+        },
+        "makeRun": {
+          "status": "passed",
+          "foregroundProcessObserved": true,
+          "shutdown": "SIGINT_after_functional_checks",
+          "functionalChecks": "passed",
+          "postgresql": "tres migraciones y 50 lecturas sinteticas",
+          "dynamodb": "creacion y lectura permitidas, eliminacion denegada, documento intacto",
+          "smokeAuditRecords": 5,
+          "smokeAttempts": 3,
+          "processReturnCodeAfterRequestedStop": -2,
+          "requestedStopIsStartupFailure": false
+        },
+        "verifierNegativeChecks": {
+          "status": "passed",
+          "total": 10,
+          "invalidReportCases": [
+            "zero-tests",
+            "skipped-test",
+            "wrong-counts",
+            "failed-teardown",
+            "missing-matrix-combination",
+            "missing-v2",
+            "missing-abuse-suite",
+            "duplicate-test-id"
+          ],
+          "awsMode": "rejected_exit_1",
+          "zeroTests": "rejected_pytest_exit_5_preserved",
+          "staleSuccessArtifact": "removed_before_new_execution",
+          "scope": "comprobaciones locales del validador y del script; no agregan ejecuciones a pytest"
+        },
+        "artifacts": [
+          "artifacts/m09-nosql-security-audit-results.json"
+        ],
+        "artifactSha256": "3b532f11912f90d2cf88c277d9fe4f4457f64233bc64dea138b11bfd15ff4347",
+        "validationLogs": [
+          {
+            "command": "make setup",
+            "path": "artifacts/m09-make-setup.log",
+            "sha256": "175832929e67e0f33a11472ddd38665d275d9a2c6f8c1e67515b1e07710454be"
+          },
+          {
+            "command": "make verify",
+            "path": "artifacts/m09-make-verify.log",
+            "sha256": "26ad615d30af49828f6f32b33eaa043512180ca197758a3fab85f49e1264753e"
+          },
+          {
+            "command": "make run",
+            "path": "artifacts/m09-make-run.log",
+            "sha256": "30bf4f32d5d3c645d9132824da6ddb8f017a7fbb48014dbf6a0dd6e941cce8b5"
+          }
+        ],
+        "m09Verification": "passed"
+      },
+      "validationSession": {
+        "startedAt": "2026-11-08T22:53:45.168112+00:00",
+        "finishedAt": "2026-11-08T22:54:16.338103+00:00",
+        "composeProject": "cdrl_m09_david_8a8218d5e509",
+        "freshVolumes": true,
+        "ports": {
+          "postgres": 55439,
+          "dynamodb": 18009
+        },
+        "temporaryResourcesCleanup": "passed"
+      },
+      "note": "Los hashes de este registro corresponden a los archivos del recordCommitSha; el artifact actual conserva la ejecución local posterior."
+    }
+  ],
+  "configuration": {
+    "python": "3.14.4",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "boto3": "1.42.0",
+    "dynamodbLocal": true,
+    "dynamodbPort": "8000",
+    "region": "us-east-1",
+    "authentication": "synthetic_server_controlled_identities",
+    "authorization": "Python_application_layer",
+    "awsIamVerified": false,
+    "dockerCompose": "5.5.0",
+    "distribution": "Ubuntu 26.04 LTS",
+    "postgresql": "16"
+  },
+  "sourceVerification": {
+    "status": "passed",
+    "method": "comparar SHA-256 de las fuentes con los blobs del commit probado, contemplando CRLF de la copia de trabajo",
+    "rawBlobMatches": 31,
+    "workingCopyCrlfMatches": 10,
+    "crlfPaths": [
+      "config/iam/m09-dynamodb-policy.json",
+      "requirements.txt",
+      "tests/fixtures/m05_events.json",
+      "tests/fixtures/m06_audit_cases.json",
+      "tests/fixtures/m06_recovery_fixture.json",
+      "tests/fixtures/m06_versioned_events.json",
+      "tests/fixtures/m07_consumer_cases.json",
+      "tests/fixtures/m07_rollback_cases.json",
+      "tests/fixtures/m07_versioned_documents.json",
+      "tests/fixtures/m09_security_cases.json"
+    ],
+    "unexplainedDifferences": []
   }
 }

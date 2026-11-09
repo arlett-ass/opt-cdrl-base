@@ -85,6 +85,14 @@ La revisión de David ejecuta `make setup` dos veces en un proyecto Compose con 
 
 El verificador rechaza reportes incompletos, pruebas omitidas, conteos inconsistentes, combinaciones o parametrizaciones faltantes y cero pruebas. Elimina un artifact anterior al comenzar y conserva el código de salida de pytest ante fallos. Los conteos y nombres del artifact provienen de la ejecución actual; los grupos de escenarios pueden compartir pruebas.
 
+### Validación local de David
+
+El 8 de noviembre de 2026, en la zona America/Mexico_City, David verificó el commit `249775da620f6c6efc110708d14959cb3fc504ee` en WSL2, Python 3.14.4 y Docker Compose 5.5.0, con PostgreSQL en 5432 y DynamoDB Local en 8000. `make setup` se completó dos veces; la primera verificación detectó variables PostgreSQL opcionales sin definir. El ajuste de `verify_all.sh` aplica los mismos valores predeterminados que Compose y los exporta a las verificaciones hijas, conservando valores personalizados. Después del ajuste, `make verify` aprobó las 345 pruebas y terminó con código 0. El artifact y el log íntegros de esa ejecución fueron enviados por David y sus hashes coinciden.
+
+También se observó `make run` en primer plano con ambos servicios funcionando y `dynamodb-init` terminado con código 0. `make queries` terminó con código 0 y devolvió diez lecturas para el dispositivo consultado y cero para la ventana vacía. Su transcripción se conserva en `artifacts/m09-local-query-transcript.txt`. El cierre de los servicios locales no se registró; no se le atribuye el cierre controlado de la revisión cloud.
+
+Esta ejecución local reutilizó volúmenes existentes. La revisión cloud con volúmenes nuevos sigue identificada por separado en `previousValidations` de evidence. La comparación de fuentes con Git confirmó 31 huellas directamente y diez contemplando CRLF en la copia de trabajo, sin diferencias de contenido sin explicar. Los archivos recibidos del artifact y del log se guardan sin modificar sus bytes. La validación de IAM AWS continúa pendiente.
+
 ## 8. Reproducción, evidencia y cierre
 
 Desde la raíz del repositorio, con Docker, las dependencias de `requirements.txt` y un `.env` local preparado fuera de Git:
