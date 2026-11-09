@@ -271,7 +271,7 @@
     "El benchmark M08 conservado se valido sin ejecutar nuevas mediciones.",
     "commitSha identifica el codigo probado; guardar esta evidencia crea un commit posterior. El SHA del tag final se registra en la entrega externa.",
     "La correccion de minimo privilegio PostgreSQL M03 no forma parte de esta rama; requiere un PR independiente y validacion propia.",
-    "El ADR esta Propuesto hasta revision del equipo. PR, CI remoto, integracion final, tag y Classroom siguen pendientes.",
+    "El ADR esta Propuesto hasta revision del equipo. El PR, la integracion final, el tag y Classroom siguen pendientes; el CI de la rama se registra en submission.remoteCI.",
     "Una ejecucion posterior regenera el artifact; los hashes de esta evidencia identifican el registro historico guardado con ella.",
     "La validación local reutiliza volúmenes existentes; la comprobación con volúmenes nuevos se conserva por separado en previousValidations.",
     "La salida local de setup y el arranque de make run fueron compartidos en el chat. Los archivos adjuntos conservan el log completo de make verify y una transcripción de make queries; no se afirma cierre controlado local.",
@@ -349,8 +349,30 @@
     "tagCreated": false,
     "finalCommitSha": null,
     "status": "pending_team_review_pull_requests_main_validation_and_tag",
-    "remoteCI": "not_verified",
-    "classroom": "pending"
+    "remoteCI": {
+      "status": "success",
+      "workflow": "CDRL feedback",
+      "headSha": "8fb6e7ed98c2386d8c9f695581826c96cd515ce0",
+      "runId": 42542249021,
+      "url": "https://github.com/arlett-ass/opt-cdrl-base/actions/runs/42542249021",
+      "observedAt": "2026-11-09T00:58:59.666020+00:00",
+      "evidenceSource": "pagina publica de GitHub Actions: Status Success y referencia completa del commit",
+      "scope": "rama de David antes de integrar; no valida futuros commits de development o main"
+    },
+    "classroom": "pending",
+    "evidencePath": "evidence/m09-nosql-security-audit.json",
+    "deliveryRequirements": [
+      "repositoryUrl",
+      "weeklyTag",
+      "exactFinalTagCommitSha",
+      "evidenceJson"
+    ],
+    "integrationPullRequest": {
+      "status": "ready_to_open",
+      "base": "development",
+      "head": "feat/m09-integration-david",
+      "compareUrl": "https://github.com/arlett-ass/opt-cdrl-base/compare/development...feat/m09-integration-david"
+    }
   },
   "davidChecklist": {
     "integrationTests": "passed_29_executions",
@@ -360,7 +382,7 @@
     "artifactAndEvidence": "recorded_from_David_uploaded_local_results",
     "regressionM01M08": "passed_152_executions",
     "cleanSetupVerifyRun": "passed_in_previous_cloud_validation; local_validation_reuses_existing_volumes",
-    "integrationPullRequest": "pending",
+    "integrationPullRequest": "description_prepared_pending_creation",
     "finalShaAndWeeklyTag": "pending_after_integration",
     "localSetupVerifyRunAndQueries": "passed"
   },
