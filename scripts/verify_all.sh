@@ -14,6 +14,12 @@ fi
 source scripts/load_env.sh
 load_env_file .env
 
+# Mantener los mismos valores predeterminados que Compose y rebuild.py.
+# También exportarlos para que las verificaciones hijas usen la misma conexión.
+export POSTGRES_DB="${POSTGRES_DB:-cdrl}"
+export POSTGRES_USER="${POSTGRES_USER:-cdrl_dev}"
+export POSTGRES_PORT="${POSTGRES_PORT:-5432}"
+
 
 PYTHON_BIN=""
 
@@ -99,4 +105,8 @@ echo "== M08 / paginación, índices y rendimiento =="
 bash scripts/verify_m08.sh
 
 echo
-echo "Verificación integrada M01-M08 completada correctamente."
+echo "== M09 / seguridad NoSQL y auditoría =="
+bash scripts/verify_m09.sh
+
+echo
+echo "Verificación integrada M01-M09 completada correctamente."

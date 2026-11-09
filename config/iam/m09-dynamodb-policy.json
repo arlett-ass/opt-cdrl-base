@@ -1,0 +1,323 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "M09 proposed DynamoDB least-privilege managed policies. Example only; not deployed or verified in AWS. No IAM enforcement is provided by DynamoDB Local.",
+  "Metadata": {
+    "Status": "Proposed deployment example; JSON and structure checked locally only.",
+    "ApplicationContract": {
+      "Separation": "Each managed policy is for a different trusted principal. Never combine all Allow statements or attach reader/writer/internal-service policies to one user identity.",
+      "Identity": "The server authenticates the subject and maps it to the application role. Client-supplied roles are untrusted. No users, roles, credentials, attachments or trust policies are created here.",
+      "Writer": "IAM PutItem is not create-only: an omitted ConditionExpression can overwrite an existing item. The trusted backend must call conditional PutItem with attribute_not_exists(eventId), validated v1/v2 data and default NONE return values. Do not hand writer credentials to clients.",
+      "Operator": "The application summary includes only eventId and type; the schema has no status. The trusted service uses ProjectionExpression and a second server-side allowlist. Its policy is not attached to cdrl_operator.",
+      "Audit": "The trusted audit service must sanitize records and use distinct attempt identifiers with conditional writes. IAM PutItem alone cannot ensure append-only or uniqueness. No user audit read/write permission is provided.",
+      "OtherPolicies": "Review all attached policies, permissions boundaries, resource policies and service control policies before deployment. An unrelated Allow for the same action can broaden conditional grants. These examples are not a permissions boundary.",
+      "Verification": "DynamoDB Local tests validate Python authorization only. Real IAM validation requires separate limited AWS identities and execution evidence. No cloud tests or policy attachments have been performed."
+    },
+    "Sources": [
+      "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-managedpolicy.html",
+      "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-sub.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/specifying-conditions.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-policy-checks.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/iam-policy-specific-table-indexes.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis-iam.html",
+      "https://docs.aws.amazon.com/service-authorization/latest/reference/list_dynamodb.html"
+    ]
+  },
+  "Parameters": {
+    "EventsTableName": {
+      "Type": "String",
+      "Default": "cdrl_events",
+      "AllowedPattern": "[A-Za-z0-9_.-]{3,255}",
+      "Description": "Existing M05 events table in the deployment account and region."
+    },
+    "AuditTableName": {
+      "Type": "String",
+      "Default": "cdrl_audit_log",
+      "AllowedPattern": "[A-Za-z0-9_.-]{3,255}",
+      "Description": "Existing separate M06 audit table in the deployment account and region."
+    }
+  },
+  "Resources": {
+    "CdrlReaderPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "cdrl_reader application principal: read events and the two existing GSIs; no direct audit access.",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ReadEventById",
+              "Effect": "Allow",
+              "Action": "dynamodb:GetItem",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+              }
+            },
+            {
+              "Sid": "QueryEventsAndExistingIndexes",
+              "Effect": "Allow",
+              "Action": "dynamodb:Query",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                }
+              ]
+            },
+            {
+              "Sid": "DenyOtherEventActions",
+              "Effect": "Deny",
+              "NotAction": [
+                "dynamodb:GetItem",
+                "dynamodb:Query"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                }
+              ]
+            },
+            {
+              "Sid": "DenyDirectAuditAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "CdrlWriterPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "cdrl_writer backend only: PutItem with no returned old values. The application must enforce create-only with attribute_not_exists(eventId).",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "CreateEventsThroughValidatedBackend",
+              "Effect": "Allow",
+              "Action": "dynamodb:PutItem",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+              },
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              }
+            },
+            {
+              "Sid": "DenyOtherEventActions",
+              "Effect": "Deny",
+              "NotAction": [
+                "dynamodb:PutItem"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                }
+              ]
+            },
+            {
+              "Sid": "DenyDirectAuditAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "CdrlOperatorUserPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "cdrl_operator user: no direct DynamoDB API. Obtain eventId/type only through the trusted summary application endpoint.",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyDirectDatabaseAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "CdrlMigratorUserPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "cdrl_migrator user: no M09 database access. Maintenance requires a separate technical identity and separate reviewed permissions.",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyDirectDatabaseAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "OperationalSummaryServicePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Trusted backend service only, never a selectable user role: GetItem projected to eventId/type. No payload, source, timestamp or audit access.",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ReadOnlyOperationalAttributes",
+              "Effect": "Allow",
+              "Action": "dynamodb:GetItem",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+              },
+              "Condition": {
+                "ForAllValues:StringEquals": {
+                  "dynamodb:Attributes": [
+                    "eventId",
+                    "type"
+                  ]
+                },
+                "StringEquals": {
+                  "dynamodb:Select": "SPECIFIC_ATTRIBUTES"
+                },
+                "Null": {
+                  "dynamodb:Attributes": "false"
+                }
+              }
+            },
+            {
+              "Sid": "DenyOtherEventActions",
+              "Effect": "Deny",
+              "NotAction": [
+                "dynamodb:GetItem"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                }
+              ]
+            },
+            {
+              "Sid": "DenyDirectAuditAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "SecurityAuditWriterServicePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Trusted internal security audit sink only: PutItem to audit table, with application sanitization and unique conditional auditId. No user role receives this policy.",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AppendSecurityAuditThroughInternalService",
+              "Effect": "Allow",
+              "Action": "dynamodb:PutItem",
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+              },
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              }
+            },
+            {
+              "Sid": "DenyAuditReadUpdateAndDelete",
+              "Effect": "Deny",
+              "NotAction": [
+                "dynamodb:PutItem"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AuditTableName}"
+              }
+            },
+            {
+              "Sid": "DenyEventAccess",
+              "Effect": "Deny",
+              "Action": "dynamodb:*",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/type-timestamp-index"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${EventsTableName}/index/source-timestamp-index"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
