@@ -1,6 +1,6 @@
 # ADR-009 — Seguridad NoSQL y auditoría
 
-**Estado:** Propuesto. Implementación revisada y validada técnicamente en local; pendiente de revisión del equipo mediante PR antes de aceptar la decisión.
+**Estado:** Aceptado técnicamente tras revisar la implementación, las 345 pruebas M01–M09, los resultados locales de David y la integración del PR #43 en development. La validación de main y el tag final siguen pendientes.
 
 **Fecha:** 8 de noviembre de 2026.
 
@@ -112,4 +112,4 @@ En el entorno administrado la ejecución local selecciona un archivo AWS sin cre
 
 El campo `commitSha` identifica el código que se probó. Guardar sus resultados crea un commit posterior; no se intenta insertar el SHA del propio commit dentro de sí mismo. La entrega externa debe registrar el SHA exacto apuntado por `week-09-final` después de integrar y validar `development` y `main`.
 
-Quedan pendientes la revisión/aceptación del ADR, el PR de David hacia `development`, el PR hacia `main`, las verificaciones remotas y sobre el commit final, el tag `week-09-final` y la entrega en Classroom. La corrección M03 solo podrá incorporarse mediante su PR independiente y pruebas propias. Este ADR no declara esas acciones completadas.
+El PR de David #43 quedó fusionado en `development` mediante `18fb1904f00b2f4ceea6e3da1e4f20f37b6c9c89`; su CI terminó en Success (run `42543687358`). El código coincide con las fuentes probadas por David y la revisión técnica acepta esta decisión dentro del alcance local documentado. Quedan pendientes el cierre documental, el PR hacia `main`, la validación remota y funcional del commit final, el tag `week-09-final` y la entrega en Classroom. La corrección M03 solo podrá incorporarse mediante su PR independiente y pruebas propias. Este ADR no declara esas acciones completadas.
